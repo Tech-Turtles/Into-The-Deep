@@ -30,7 +30,7 @@ public class Manual extends RobotHardware {
             intakeRight.setPower(maxIntakeSpeed * controller1.left_trigger);
         } else if (controller1.right_trigger > 0.2) {
             intakeLeft.setPower(-maxIntakeSpeed * controller1.right_trigger);
-            intakeRight.setPower(-``maxIntakeSpeed * controller1.right_trigger);
+            intakeRight.setPower(-maxIntakeSpeed * controller1.right_trigger);
         } else {
             intakeLeft.setPower(0);
             intakeRight.setPower(0);
