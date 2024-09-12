@@ -1,16 +1,19 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.RobotHardware;
 
 @TeleOp(name = "Manual")
+@Config
 public class Manual extends RobotHardware {
     // Max speed in slow mode set to 40%
     private final double slowModeMultiplier = 0.4;
     // Flag to control whether slow mode is on or not
     private boolean slowModeEnabled = false;
+    private double maxIntakeSpeed = 1.0;
 
     @Override
     public void init() {
@@ -21,6 +24,17 @@ public class Manual extends RobotHardware {
     @Override
     public void loop() {
         super.loop();
+
+        if (controller1.left_trigger > 0.2) {
+            intakeLeft.setPower(maxIntakeSpeed * controller1.left_trigger);
+            intakeRight.setPower(maxIntakeSpeed * controller1.left_trigger);
+        } else if (controller1.right_trigger > 0.2) {
+            intakeLeft.setPower(-maxIntakeSpeed * controller1.right_trigger);
+            intakeRight.setPower(-``maxIntakeSpeed * controller1.right_trigger);
+        } else {
+            intakeLeft.setPower(0);
+            intakeRight.setPower(0);
+        }
 
         // Reset gyro angle if triangle is pressed
         if (controller1.triangleOnce()){
