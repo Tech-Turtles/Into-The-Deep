@@ -12,6 +12,7 @@
             <ContinuousRotationServo    name = "RightIntakeCRServo"  port = "2" />
 
             <ControlHubImuBHI260AP name="IMU 1" port="0" bus="0" />
+            <RevColorSensorV3 name="IntakeColorSensor" port="1" bus="0" />
         </LynxModule>
     </LynxUsbDevice>
 </Robot>

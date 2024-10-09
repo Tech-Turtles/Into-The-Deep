@@ -4,36 +4,53 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.RobotHardware;
 
 @TeleOp(name = "Manual")
 @Config
 public class Manual extends RobotHardware {
+    public static boolean colorSensorStop = true;
+    public static double colorSensorStopDistance = 0.4;
     // Max speed in slow mode set to 40%
     private final double slowModeMultiplier = 0.4;
     // Flag to control whether slow mode is on or not
     private boolean slowModeEnabled = false;
     private double maxIntakeSpeed = 1.0;
+    private boolean intakeOn;
 
     @Override
     public void init() {
         super.init();
         telemetry.addData("Status", "Initialized");
+        intakeOn = false;
     }
 
     @Override
     public void loop() {
         super.loop();
 
-        if (controller1.left_trigger > 0.2) {
-            intakeLeft.setPower(maxIntakeSpeed * controller1.left_trigger);
-            intakeRight.setPower(maxIntakeSpeed * controller1.left_trigger);
-        } else if (controller1.right_trigger > 0.2) {
-            intakeLeft.setPower(-maxIntakeSpeed * controller1.right_trigger);
-            intakeRight.setPower(-maxIntakeSpeed * controller1.right_trigger);
-        } else {
+        if (controller1.leftBumper()) {
+            if (!colorSensorStop || intakeSensor.getDistance(DistanceUnit.INCH) > colorSensorStopDistance) {
+                intakeLeft.setPower(maxIntakeSpeed);
+                intakeRight.setPower(maxIntakeSpeed);
+                intakeOn = true;
+            } else {
+                intakeLeft.setPower(0);
+                intakeRight.setPower(0);
+                intakeOn = false;
+            }
+        } else if (controller1.rightBumper()) {
+            intakeLeft.setPower(-maxIntakeSpeed);
+            intakeRight.setPower(-maxIntakeSpeed);
+            intakeOn = false;
+        } else if (!intakeOn) {
             intakeLeft.setPower(0);
             intakeRight.setPower(0);
+        } else if (colorSensorStop && intakeSensor.getDistance(DistanceUnit.INCH) < colorSensorStopDistance) {
+            intakeLeft.setPower(0);
+            intakeRight.setPower(0);
+            intakeOn = false;
         }
 
         // Reset gyro angle if triangle is pressed
@@ -87,5 +104,10 @@ public class Manual extends RobotHardware {
         telemetry.addData("Rear Right Drive Motor Position", rearRight.getCurrentPosition());
 
         telemetry.addData("IMU angle", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
+
+        telemetry.addData("Intake Color Sensor Distance (In)", intakeSensor.getDistance(DistanceUnit.INCH));
+        telemetry.addData("Intake Color Sensor Colors", "R%.2f, G%.2f, B%.2f, A%.2f",
+                intakeSensor.getNormalizedColors().red, intakeSensor.getNormalizedColors().green,
+                intakeSensor.getNormalizedColors().blue, intakeSensor.getNormalizedColors().alpha);
     }
 }

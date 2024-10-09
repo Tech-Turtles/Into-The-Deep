@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -12,6 +13,7 @@ import org.firstinspires.ftc.teamcode.utility.Controller;
 public class RobotHardware extends OpMode {
     protected DcMotorEx frontLeft, frontRight, rearLeft, rearRight;
     protected CRServo intakeLeft, intakeRight;
+    protected RevColorSensorV3 intakeSensor;
     protected IMU imu;
     protected Controller controller1, controller2;
 
@@ -24,6 +26,8 @@ public class RobotHardware extends OpMode {
 
         intakeLeft = hardwareMap.get(CRServo.class, "LeftIntakeCRServo");
         intakeRight = hardwareMap.get(CRServo.class, "RightIntakeCRServo");
+
+        intakeSensor = hardwareMap.get(RevColorSensorV3.class, "IntakeColorSensor");
 
         rearLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
