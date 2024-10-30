@@ -17,6 +17,9 @@ public class Manual extends RobotHardware {
     public static double maxIntakeSpeed = 1.0;
     public static double maxSlideSpeed = 1.0;
     public static double maxArmSpeed = 1.0;
+    public static double ticksPerRotation = 537.7 ;
+
+    public static double limitRotations = 1.55;
 
     // Flag to control whether slow mode is on or not
     private boolean slowModeEnabled = false;
@@ -32,6 +35,8 @@ public class Manual extends RobotHardware {
     @Override
     public void loop() {
         super.loop();
+
+        double extensionLimitTicks = (ticksPerRotation * limitRotations);
 
         if (controller1.leftBumper()) {
             if (!colorSensorStop || intakeSensor.getDistance(DistanceUnit.INCH) > colorSensorStopDistance) {
@@ -57,9 +62,18 @@ public class Manual extends RobotHardware {
         }
 
         if (controller1.right_trigger > 0.2) {
-            slideMotorLeft.setPower(controller1.right_trigger * maxSlideSpeed);
-            slideMotorRight.setPower(controller1.right_trigger * maxSlideSpeed);
-            slideMotorOut.setPower(controller1.right_trigger * maxSlideSpeed);
+            if (!controller1.circle() && (
+                    Math.abs( slideMotorLeft.getCurrentPosition()) > extensionLimitTicks
+                    || Math.abs( slideMotorRight.getCurrentPosition()) > extensionLimitTicks))
+            {
+                slideMotorOut.setPower(0);
+                slideMotorLeft.setPower(0);
+                slideMotorRight.setPower(0);
+            } else {
+                slideMotorLeft.setPower(controller1.right_trigger * maxSlideSpeed);
+                slideMotorRight.setPower(controller1.right_trigger * maxSlideSpeed);
+                slideMotorOut.setPower(controller1.right_trigger * maxSlideSpeed);
+            }
         } else if (controller1.left_trigger > 0.2) {
             slideMotorLeft.setPower(controller1.left_trigger * -maxSlideSpeed);
             slideMotorRight.setPower(controller1.left_trigger * -maxSlideSpeed);
@@ -74,6 +88,10 @@ public class Manual extends RobotHardware {
             armMotorRight.setPower(maxArmSpeed);
         } else if (controller1.dpadDown()) {
             armMotorRight.setPower(-1.0 * maxArmSpeed);
+        } else if (controller1.dpadRight()) {
+            armMotorRight.setPower(-1.0 * maxArmSpeed / 2.0);
+        } else if (controller1.dpadLeft()) {
+            armMotorRight.setPower(-(-1.0) * maxArmSpeed / 2.0);
         } else {
             armMotorRight.setPower(0.0);
         }
@@ -120,11 +138,16 @@ public class Manual extends RobotHardware {
         telemetry.addData("Rear Left Drive Motor Position", rearLeft.getCurrentPosition());
         telemetry.addData("Rear Right Drive Motor Position", rearRight.getCurrentPosition());
 
+        telemetry.addData("Extension Left Encoder Position", slideMotorLeft.getCurrentPosition());
+        telemetry.addData("Extension Right Encoder Position", slideMotorRight.getCurrentPosition());
+
         telemetry.addData("IMU angle", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
 
         telemetry.addData("Intake Color Sensor Distance (In)", intakeSensor.getDistance(DistanceUnit.INCH));
         telemetry.addData("Intake Color Sensor Colors", "R%.2f, G%.2f, B%.2f, A%.2f",
                 intakeSensor.getNormalizedColors().red, intakeSensor.getNormalizedColors().green,
                 intakeSensor.getNormalizedColors().blue, intakeSensor.getNormalizedColors().alpha);
+
+        telemetry.addData("Max Extension Ticks", (ticksPerRotation * limitRotations));
     }
 }

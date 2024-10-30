@@ -11,6 +11,6 @@ public class JavaTest extends OpMode {
 
     @Override
     public void loop() {
-    Double speedForward = -gamepad1.left_stick_y / 2.0;
+        double speedForward = -gamepad1.left_stick_y / 2.0;
     }
 }

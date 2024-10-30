@@ -42,7 +42,7 @@ public class RobotHardware extends OpMode {
         rearRight.setDirection(DcMotorSimple.Direction.REVERSE);
         frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        armMotorRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        armMotorRight.setDirection(DcMotorSimple.Direction.FORWARD);
         slideMotorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         slideMotorOut.setDirection(DcMotorSimple.Direction.REVERSE);
 
