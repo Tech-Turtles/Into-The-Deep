@@ -3,16 +3,22 @@
     <LynxUsbDevice name="Expansion Hub Portal 1" serialNumber="(embedded)" parentModuleAddress="173">
         <LynxModule name="Expansion Hub 173" port="173">
 
-            <goBILDA5202SeriesMotor     name =  "RearLeftDrive"      port = "2" />
-            <goBILDA5202SeriesMotor     name =  "RearRightDrive"     port = "1" />
             <goBILDA5202SeriesMotor     name =  "FrontRightDrive"    port = "0" />
-            <goBILDA5202SeriesMotor     name =  "FrontLeftDrive"     port = "3" />
-
-            <ContinuousRotationServo    name = "LeftIntakeCRServo"   port = "0" />
-            <ContinuousRotationServo    name = "RightIntakeCRServo"  port = "2" />
+            <goBILDA5202SeriesMotor     name =  "ArmMotorRight"      port = "1" />
+            <goBILDA5202SeriesMotor     name =  "SlideMotorRight"    port = "2" />
+            <goBILDA5202SeriesMotor     name =  "RearRightDrive"     port = "3" />
 
             <ControlHubImuBHI260AP name="IMU 1" port="0" bus="0" />
             <RevColorSensorV3 name="IntakeColorSensor" port="1" bus="0" />
+        </LynxModule>
+        <LynxModule name="Expansion Hub 2" port="2">
+            <goBILDA5202SeriesMotor     name = "FrontLeftDrive" port = "0" />
+            <goBILDA5202SeriesMotor     name = "SlideMotorOut"  port = "1" />
+            <goBILDA5202SeriesMotor     name = "SlideMotorLeft" port = "2" />
+            <goBILDA5202SeriesMotor     name = "RearLeftDrive"  port = "3" />
+
+            <ContinuousRotationServo    name = "LeftIntakeCRServo"   port = "0" />
+            <ContinuousRotationServo    name = "RightIntakeCRServo"  port = "2" />
         </LynxModule>
     </LynxUsbDevice>
 </Robot>

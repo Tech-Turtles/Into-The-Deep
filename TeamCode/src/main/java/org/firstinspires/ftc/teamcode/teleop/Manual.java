@@ -14,9 +14,12 @@ public class Manual extends RobotHardware {
     public static double colorSensorStopDistance = 0.4;
     // Max speed in slow mode set to 40%
     private final double slowModeMultiplier = 0.4;
+    public static double maxIntakeSpeed = 1.0;
+    public static double maxSlideSpeed = 1.0;
+    public static double maxArmSpeed = 1.0;
+
     // Flag to control whether slow mode is on or not
     private boolean slowModeEnabled = false;
-    private double maxIntakeSpeed = 1.0;
     private boolean intakeOn;
 
     @Override
@@ -53,6 +56,28 @@ public class Manual extends RobotHardware {
             intakeOn = false;
         }
 
+        if (controller1.right_trigger > 0.2) {
+            slideMotorLeft.setPower(controller1.right_trigger * maxSlideSpeed);
+            slideMotorRight.setPower(controller1.right_trigger * maxSlideSpeed);
+            slideMotorOut.setPower(controller1.right_trigger * maxSlideSpeed);
+        } else if (controller1.left_trigger > 0.2) {
+            slideMotorLeft.setPower(controller1.left_trigger * -maxSlideSpeed);
+            slideMotorRight.setPower(controller1.left_trigger * -maxSlideSpeed);
+            slideMotorOut.setPower(controller1.left_trigger * -maxSlideSpeed);
+        } else {
+            slideMotorOut.setPower(0);
+            slideMotorLeft.setPower(0);
+            slideMotorRight.setPower(0);
+        }
+
+        if (controller1.dpadUp()) {
+            armMotorRight.setPower(maxArmSpeed);
+        } else if (controller1.dpadDown()) {
+            armMotorRight.setPower(-1.0 * maxArmSpeed);
+        } else {
+            armMotorRight.setPower(0.0);
+        }
+
         // Reset gyro angle if triangle is pressed
         if (controller1.triangleOnce()){
             imu.resetYaw();
@@ -63,31 +88,23 @@ public class Manual extends RobotHardware {
             slowModeEnabled = !slowModeEnabled;
         }
 
-        double y = -controller1.left_stick_y;
-        double x = controller1.left_stick_x;
-        double rx = controller1.right_stick_x;
-
-        double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-
-        // Rotate the movement direction counter to the bot's rotation
-        double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
-        double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
+        double y = Math.pow(-controller1.left_stick_y, 3);
+        double x = Math.pow(controller1.left_stick_x * 1.1, 3);
+        double rx = Math.pow(controller1.right_stick_x, 3);
 
         // Value the motor speeds are multiplied by either 1 or the slow mode percent
         double slowMode = 1.0;
         if (slowModeEnabled)
             slowMode = slowModeMultiplier;
 
-        rotX = rotX * 1.1;  // Counteract imperfect strafing
-
         // Denominator is the largest motor power (absolute value) or 1
         // This ensures all the powers maintain the same ratio,
         // but only if at least one is out of the range [-1, 1]
-        double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
-        double frontLeftPower = (rotY + rotX + rx) / denominator * slowMode;
-        double rearLeftPower = (rotY - rotX + rx) / denominator * slowMode;
-        double frontRightPower = (rotY - rotX - rx) / denominator * slowMode;
-        double rearRightPower = (rotY + rotX - rx) / denominator * slowMode;
+        double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+        double frontLeftPower = (y + x + rx) / denominator * slowMode;
+        double rearLeftPower = (y - x + rx) / denominator * slowMode;
+        double frontRightPower = (y - x - rx) / denominator * slowMode;
+        double rearRightPower = (y + x - rx) / denominator * slowMode;
 
         frontLeft.setPower(frontLeftPower);
         rearLeft.setPower(rearLeftPower);
