@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.utility.PIDController;
 
 public class RobotHardware extends OpMode {
     protected DcMotorEx frontLeft, frontRight, rearLeft, rearRight,
-            armMotorRight, slideMotorLeft, slideMotorRight, slideMotorOut;
+            armPitMotor, slideMotorLeft, slideMotorRight, slideMotorOut;
     protected CRServo intakeLeft, intakeRight;
     protected RevColorSensorV3 intakeSensor;
     protected IMU imu;
@@ -29,7 +29,7 @@ public class RobotHardware extends OpMode {
         rearLeft = hardwareMap.get(DcMotorEx.class, "RearLeftDrive");
         rearRight = hardwareMap.get(DcMotorEx.class, "RearRightDrive");
 
-        armMotorRight = hardwareMap.get(DcMotorEx.class, "ArmMotorRight");
+        armPitMotor = hardwareMap.get(DcMotorEx.class, "ArmMotorRight");
         slideMotorLeft = hardwareMap.get(DcMotorEx.class, "SlideMotorLeft");
         slideMotorRight = hardwareMap.get(DcMotorEx.class, "SlideMotorRight");
         slideMotorOut = hardwareMap.get(DcMotorEx.class, "SlideMotorOut");
@@ -42,7 +42,7 @@ public class RobotHardware extends OpMode {
         rearRight.setDirection(DcMotorSimple.Direction.REVERSE);
         frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        armMotorRight.setDirection(DcMotorSimple.Direction.FORWARD);
+        armPitMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         slideMotorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         slideMotorOut.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -57,7 +57,7 @@ public class RobotHardware extends OpMode {
         frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         slideMotorOut.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        armMotorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        armPitMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         slideMotorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         slideMotorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
