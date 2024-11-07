@@ -26,6 +26,8 @@ public class Manual extends RobotHardware {
     public static double armLowerLimit = -167;
     public static double armUpperLimit = 980;
 
+    public static double armSetpoint = 0;
+
     // Flag to control whether slow mode is on or not
     private boolean slowModeEnabled = false;
     private boolean intakeOn;
