@@ -13,6 +13,8 @@ import org.firstinspires.ftc.teamcode.utility.Controller;
 import org.firstinspires.ftc.teamcode.utility.PIDController;
 
 public class RobotHardware extends OpMode {
+
+    // sldiemotorright is the one with a plugged in encoder
     protected DcMotorEx frontLeft, frontRight, rearLeft, rearRight,
             armPitMotor, slideMotorLeft, slideMotorRight, slideMotorOut;
     protected CRServo intakeLeft, intakeRight;
