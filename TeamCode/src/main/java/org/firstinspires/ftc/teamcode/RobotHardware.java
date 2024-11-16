@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -11,7 +12,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 
 import org.firstinspires.ftc.teamcode.utility.Controller;
 import org.firstinspires.ftc.teamcode.utility.PIDController;
-
+@Config
 public class RobotHardware extends OpMode {
 
     // sldiemotorright is the one with a plugged in encoder
@@ -22,7 +23,13 @@ public class RobotHardware extends OpMode {
     protected IMU imu;
     protected Controller controller1, controller2;
 
-    protected final PIDController armController = new PIDController(0.01, 0.0, 0.0, 0.018);
+    public static double pCoeffPID = 0.008;
+
+    public static double iCoeffPID = 0.02;
+
+    public static double dCoeffPID = 0.00006;
+
+    protected PIDController armController = new PIDController(pCoeffPID,iCoeffPID,dCoeffPID);
 
     @Override
     public void init() {

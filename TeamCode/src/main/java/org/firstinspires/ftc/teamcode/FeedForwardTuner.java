@@ -1,15 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.teamcode.teleop.PID.horLimitRotations;
-import static org.firstinspires.ftc.teamcode.teleop.PID.maxSlideSpeed;
-import static org.firstinspires.ftc.teamcode.teleop.PID.retractFudgeLimitTicks;
-import static org.firstinspires.ftc.teamcode.teleop.PID.specimenLimitTicks;
-import static org.firstinspires.ftc.teamcode.teleop.PID.ticksPerRotation;
+import static org.firstinspires.ftc.teamcode.teleop.MainPID.horLimitRotations;
+import static org.firstinspires.ftc.teamcode.teleop.MainPID.maxSlideSpeed;
+import static org.firstinspires.ftc.teamcode.teleop.MainPID.retractFudgeLimitTicks;
+import static org.firstinspires.ftc.teamcode.teleop.MainPID.specimenLimitTicks;
+import static org.firstinspires.ftc.teamcode.teleop.MainPID.ticksPerRotation;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
-import org.firstinspires.ftc.teamcode.teleop.PID;
 
 @Config
 @TeleOp
@@ -35,7 +33,6 @@ public class FeedForwardTuner extends RobotHardware{
         super.loop();
 
         double position = armPitMotor.getCurrentPosition();
-        double power = armController.calculate(position, setpoint);
         double positionoffset = position + zeroOffset;
         double armangle = positionoffset / ticksPerDegreeArmPit;
         double precentOfExtension = Math.pow(slideMotorRight.getCurrentPosition() / (extensionLimitTicks),ffexpo);
@@ -87,7 +84,6 @@ public class FeedForwardTuner extends RobotHardware{
         }
 
         telemetry.addData("arm pitch" , armPitMotor.getCurrentPosition());
-        telemetry.addData("power", power);
         telemetry.addData("position offset", positionoffset);
         telemetry.addData("arm angle", armangle);
         telemetry.addData("extension ticks", slideMotorRight.getCurrentPosition());

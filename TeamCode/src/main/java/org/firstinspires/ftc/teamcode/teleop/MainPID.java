@@ -21,17 +21,20 @@ public class PID extends OpMode {
 }*/
 package org.firstinspires.ftc.teamcode.teleop;
 
+import static org.firstinspires.ftc.teamcode.FeedForwardTuner.ffexpo;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.RobotHardware;
-import org.firstinspires.ftc.teamcode.utility.PIDController;
 
-@TeleOp(name = "PID")
+@TeleOp(name = "Main PID")
 @Config
-public class PID extends RobotHardware {
+public class MainPID extends RobotHardware {
+
+    public static double wallSpecimenPit = 200;
     public static boolean colorSensorStop = true;
     public static double colorSensorStopDistance = 0.4;
     // Max speed in slow mode set to 40%
@@ -48,13 +51,13 @@ public class PID extends RobotHardware {
     public static double armLowerLimit = -1667;
     public static double armUpperLimit = 950 ;
 
-    public static double armPitRiseTime = 1; //seconds, not firsts
+    private static double armPitRiseTime = 1; //seconds, not firsts
 
-    public static double loopRate =  100; //Hz
+    private static double loopRate =  100; //Hz
 
     public static double armPitTotalEncoderTicks = Math.abs(armLowerLimit) + armUpperLimit;
 
-    public static double armPitPidStep = (armPitTotalEncoderTicks / (armPitRiseTime * loopRate));
+    private static double armPitPidStep = (armPitTotalEncoderTicks / (armPitRiseTime * loopRate));
     /*
     time to get all the way (in sec)
     rate that the loop executs at (200 updates /sec? )
@@ -63,20 +66,25 @@ public class PID extends RobotHardware {
 
      */
 
-    public static double pCoeffPID = 0.0015;
 
-    public static double iCoeffPID = 0.00;
 
-    public static double dCoeffPID = 0.00006;
+    public static double highBucketSampleArmPit = -500;
 
-    public static double highBucketSampleArmPit = 650;
-
-    public static double vertArmPit = 800;
+    public static double vertArmPit = 700;
 
     public static double horArmPit = -1500;
 
     public static double highChamberEndArmPit = -50;
-    private PIDController armPitPID = new PIDController(pCoeffPID,iCoeffPID,dCoeffPID);
+
+    public static boolean enable = true;
+    public static double ff = 0.145;
+    public static  double ffMax = 0.3;
+    public static double zeroOffset = 1450;
+    public static double ticksPerDegreeArmPit = 22.5096444;
+    public static double ffHighAngleCutOff = 90 ;
+    public static double ffLowAngleCutOff = -10 ;
+
+    public static double ffCuttoffCoEff= 0.4;
 
 
     private double armPitTarget = 0;
@@ -102,8 +110,8 @@ public class PID extends RobotHardware {
         super.loop();
 
         if (prevP != pCoeffPID || prevI != iCoeffPID || prevD != dCoeffPID) {
-            armPitPID.setPID(pCoeffPID, iCoeffPID, dCoeffPID);
-            armPitPID.reset();
+            armController.setPID(pCoeffPID, iCoeffPID, dCoeffPID);
+            armController.reset();
             prevP = pCoeffPID;
             prevI = iCoeffPID;
             prevD = dCoeffPID;
@@ -111,7 +119,7 @@ public class PID extends RobotHardware {
 
         double extensionLimitTicks = (ticksPerRotation * horLimitRotations);
 
-        if (controller1.rightBumper()){
+        if (controller2.rightBumper()){
             if (!colorSensorStop || intakeSensor.getDistance(DistanceUnit.INCH) > colorSensorStopDistance) {
                 intakeLeft.setPower(maxIntakeSpeed);
                 intakeRight.setPower(maxIntakeSpeed);
@@ -121,7 +129,7 @@ public class PID extends RobotHardware {
                 intakeRight.setPower(0);
                 intakeOn = false;
             }
-        } else if (controller1.leftBumper()) {
+        } else if (controller2.leftBumper()) {
             intakeLeft.setPower(-maxIntakeSpeed);
             intakeRight.setPower(-maxIntakeSpeed);
             intakeOn = false;
@@ -134,35 +142,35 @@ public class PID extends RobotHardware {
             intakeOn = false;
         }
 
-        if (controller1.right_trigger > 0.2) {
-            if (!controller1.circle() &&
+        if (controller2.right_trigger > 0.2) {
+            if (!controller2.circle() &&
                     Math.abs( slideMotorRight.getCurrentPosition()) > extensionLimitTicks) {
                 slideMotorOut.setPower(0);
                 slideMotorLeft.setPower(0);
                 slideMotorRight.setPower(0);
             }
-            else if (controller1.triangle() && (
+            else if (controller2.triangle() && (
                     Math.abs( slideMotorRight.getCurrentPosition()) > specimenLimitTicks))
             {
                 slideMotorOut.setPower(0);
                 slideMotorLeft.setPower(0);
                 slideMotorRight.setPower(0);
             } else {
-                slideMotorLeft.setPower(controller1.right_trigger * maxSlideSpeed);
-                slideMotorRight.setPower(controller1.right_trigger * maxSlideSpeed);
-                slideMotorOut.setPower(controller1.right_trigger * maxSlideSpeed);
+                slideMotorLeft.setPower(controller2.right_trigger * maxSlideSpeed);
+                slideMotorRight.setPower(controller2.right_trigger * maxSlideSpeed);
+                slideMotorOut.setPower(controller2.right_trigger * maxSlideSpeed);
             }
-        } else if (controller1.left_trigger > 0.2) {
+        } else if (controller2.left_trigger > 0.2) {
 
-            if (controller1.triangle() && (Math.abs( slideMotorRight.getCurrentPosition()) < specimenLimitTicks + retractFudgeLimitTicks))
+            if (controller2.triangle() && (Math.abs( slideMotorRight.getCurrentPosition()) < specimenLimitTicks + retractFudgeLimitTicks))
             {
                 slideMotorOut.setPower(0);
                 slideMotorLeft.setPower(0);
                 slideMotorRight.setPower(0);
             } else {
-                slideMotorLeft.setPower(controller1.left_trigger * -maxSlideSpeed);
-                slideMotorRight.setPower(controller1.left_trigger * -maxSlideSpeed);
-                slideMotorOut.setPower(controller1.left_trigger * -maxSlideSpeed);
+                slideMotorLeft.setPower(controller2.left_trigger * -maxSlideSpeed);
+                slideMotorRight.setPower(controller2.left_trigger * -maxSlideSpeed);
+                slideMotorOut.setPower(controller2.left_trigger * -maxSlideSpeed);
             }
         } else {
             slideMotorOut.setPower(0);
@@ -183,7 +191,7 @@ public class PID extends RobotHardware {
         */
 
  /*
-        if (controller1.dpadUp()) {
+        if (controller2.dpadUp()) {
             if (armPitMotor.getCurrentPosition() > armUpperLimit) {
                 armPitMotor.setPower(0);
             } else {
@@ -195,79 +203,108 @@ public class PID extends RobotHardware {
         }
 */
 
-        if (controller1.dpadLeft()) {
+        if (controller2.dpadLeft()) {
             armPitTarget = highBucketSampleArmPit;
         }
 
-        if (controller1.dpadUp()){
+        if (controller2.dpadUp()){
             armPitTarget = vertArmPit;
         }
 
-        if (controller1.dpadDown()){
+        if (controller2.dpadDown()){
             armPitTarget = horArmPit;
         }
 
-       if (controller1.dpadRight()){
+       if (controller2.dpadRight()){
            armPitTarget = highChamberEndArmPit;
-
-
         }
+       if (controller2.square()){
+           armPitTarget = wallSpecimenPit;
+       }
 
        /*
-        if (controller1.dpadUp()) {
+        if (controller2.dpadUp()) {
             armPitTarget = armPitTarget + armPitPidStep;
             if (armPitTarget > armUpperLimit) {
                 armPitTarget = armUpperLimit;
             }
         }
 
-        if (controller1.dpadLeft()) {
+        if (controller2.dpadLeft()) {
             armPitTarget = armPitTarget + (armPitPidStep / 2);
             if (armPitTarget > armUpperLimit) {
                 armPitTarget = armUpperLimit;
             }
         }
 
-        if (controller1.dpadDown()) {
+        if (controller2.dpadDown()) {
             armPitTarget = armPitTarget - armPitPidStep;
             if (armPitTarget < armLowerLimit) {
                 armPitTarget = armLowerLimit;
             }
         }
 
-        if (controller1.dpadRight()) {
+        if (controller2.dpadRight()) {
             armPitTarget = armPitTarget - (armPitPidStep / 2);
             if (armPitTarget < armLowerLimit) {
                 armPitTarget = armLowerLimit;
             }
         }
  */
-        armPitMotor.setPower(armPitPID.calculate(armPitMotor.getCurrentPosition(), armPitTarget));
+
+        double position = armPitMotor.getCurrentPosition();
+        double positionOffset = position + zeroOffset;
+        double armAngle = positionOffset / ticksPerDegreeArmPit;
+        double percentOfExtension = Math.pow(slideMotorRight.getCurrentPosition() / (extensionLimitTicks),ffexpo);
+        double kg = 0;
+
+        /*
+        if (ffMaxPrev != ffMax || ffPrev != ff) {
+            ffMaxPrev = ffMax;
+            ffPrev = ff;
+        }
+        */
+
+        if (enable) {
+            double ffDifference = ffMax -ff;
+
+            if (position > ffHighAngleCutOff* ticksPerDegreeArmPit){
+                ffDifference = ffDifference-ffCuttoffCoEff;
+            }
+                kg = (ff * Math.cos((Math.toRadians(armAngle)))) + (ffDifference * percentOfExtension);
+                telemetry.addData("Kg", kg);
+                telemetry.addData("arm angle", armAngle);
+
+                if (position < ffLowAngleCutOff * ticksPerDegreeArmPit){
+                    kg = 0;
+                }
+        }
+        armPitMotor.setPower(armController.calculate(armPitMotor.getCurrentPosition(), armPitTarget) + kg );
 
 
         /*
-        if (controller1.dpadUp()) {
+        if (controller2.dpadUp()) {
             if  (armPitMotor.getCurrentPosition() > armUpperLimit)
             {
                 armPitMotor.setPower(0);
             }
             else
                 armPitMotor.setPower(maxArmSpeed);
-        } else if (controller1.dpadDown()) {
+        } else if (controller2.dpadDown()) {
             if  (armPitMotor.getCurrentPosition() < armLowerLimit)
             {
                 armPitMotor.setPower(0);
             }
             else
                 armPitMotor.setPower(-1.0 * maxArmSpeed);
-        } else if (controller1.dpadRight()) {
+        } else if (controller2.dpadRight()) {
             if  (armPitMotor.getCurrentPosition() < armLowerLimit)
             {
                 armPitMotor.setPower(0);
             }
             else
                 armPitMotor.setPower(-1.0 * maxArmSpeed / 2.0);
-        } else if (controller1.dpadLeft()) {
+        } else if (controller2.dpadLeft()) {
             if  (armPitMotor.getCurrentPosition() > armUpperLimit)
             {
                 armPitMotor.setPower(0);
@@ -314,7 +351,9 @@ public class PID extends RobotHardware {
         displayTelemetry();
     }
 
-    private void displayTelemetry() {
+    private void displayTelemetry()
+
+    {
         telemetry.addData("Front Left Drive Motor Position", frontLeft.getCurrentPosition());
         telemetry.addData("Front Right Drive Motor Position", frontRight.getCurrentPosition());
         telemetry.addData("Rear Left Drive Motor Position", rearLeft.getCurrentPosition());
@@ -334,7 +373,8 @@ public class PID extends RobotHardware {
 
         telemetry.addData("Max Extension Ticks", (ticksPerRotation * horLimitRotations));
         telemetry.addData("Arm Pit Set Point", (armPitTarget));
-        telemetry.addData("Arm Pit motor power", (armPitPID.calculate(armPitMotor.getCurrentPosition(), armPitTarget)));
+        telemetry.addData("Arm Pit motor power", (armController.calculate(armPitMotor.getCurrentPosition(), armPitTarget)));
         telemetry.addData("Arm Pit PID Steps", (armPitPidStep));
+
     }
 }
