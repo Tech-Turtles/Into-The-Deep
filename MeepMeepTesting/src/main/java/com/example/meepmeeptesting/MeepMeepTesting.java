@@ -34,10 +34,20 @@ public class MeepMeepTesting {
 
         TrajectoryActionBuilder chamberToSpikeMark =
                 rightStartToSpecimenPlace.endTrajectory().fresh() //specimen place
-                        .lineToY((-24 - robotHalfW) - 0.0001) //back up to make path an arc
-                        .splineTo(new Vector2d(21, (-24 - robotHalfW - 6)), Math.toRadians(0)) // intermediate path to not hit the truss
-                        .splineTo(new Vector2d(41, (-26)), Math.toRadians(0))//where to go to scoop sample
-                        .splineTo(new Vector2d(45, (-56)), Math.toRadians(-90));
+                        .setTangent(Math.toRadians(-35))
+                        .splineToConstantHeading(new Vector2d(35, -34), Math.toRadians(30)) // intermediate path to not hit the truss
+                        .setTangent(Math.toRadians(90))
+                        .splineToConstantHeading(new Vector2d(35, -22), Math.toRadians(90))
+                        .splineToConstantHeading(new Vector2d(46, -18), Math.toRadians(0))
+                        .setTangent(Math.toRadians(-90))
+                        .splineToConstantHeading(new Vector2d(46, -60), Math.toRadians(-90))
+                        .setTangent(Math.toRadians(90))
+                        .splineToConstantHeading(new Vector2d(50, -14), Math.toRadians(60))
+                        .splineToConstantHeading(new Vector2d(56, -20), Math.toRadians(-30))
+                        .setTangent(Math.toRadians(-90))
+                        .splineToConstantHeading(new Vector2d(56, -60), Math.toRadians(-90));
+//                        .splineToConstantHeading(new Vector2d(41, (-26)), Math.toRadians(0))//where to go to scoop sample
+//                        .splineToConstantHeading(new Vector2d(45, (-56)), Math.toRadians(-90));
 
         myBot.runAction(
                 new SequentialAction(
