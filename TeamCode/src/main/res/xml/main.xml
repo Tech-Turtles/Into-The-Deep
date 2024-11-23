@@ -11,7 +11,7 @@
             <ControlHubImuBHI260AP name="IMU 1" port="0" bus="0" />
             <RevColorSensorV3 name="IntakeColorSensor" port="1" bus="0" />
         </LynxModule>
-        <LynxModule name="Expansion Hub 2" port="2">
+        <LynxModule name="Expansion Hub 1" port="1">
             <goBILDA5202SeriesMotor     name = "FrontLeftDrive" port = "0" />
             <goBILDA5202SeriesMotor     name = "SlideMotorOut"  port = "1" />
             <goBILDA5202SeriesMotor     name = "SlideMotorLeft" port = "2" />
