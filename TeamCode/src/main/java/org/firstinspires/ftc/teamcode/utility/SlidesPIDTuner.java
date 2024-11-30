@@ -27,132 +27,155 @@ import org.firstinspires.ftc.teamcode.RobotHardware;
 public class SlidesPIDTuner extends RobotHardware {
 
 
-    private static double armPitTarget;
-    public static boolean slidePowerTester = true;
-    public static double slideSetpoint = 0;
-    public static double slideP = 0.0;
-    public static double slideI = 0.0;
-    public static double slideD = 0.0;
-    public static double slideffexpo = 0.5;
-    public static double slideffBase =0.4;
-    public static double slideffMax = 0.58;
-    public static double highSpecExtSetPoint = -364;
-    public static double highSpecPitSetPoint = 800;
-    public static double highSampleExtSetPoint = extensionLimitTicks;
-    public static double highSamplePitSetPoint = 650;
-    public static double lowSampleExtSetPoint = -500;
-    public static double lowSamplePitSetPoint = 500;
-    private final PIDController slideController = new PIDController(slideP, slideI, slideD, 0.18);
-    private double prevP = slideP, prevI = slideI, prevD = slideD;
-    private double slidePIDPower = 0;
-
-    @Override
-    public void loop() {
-        super.loop();
-
-        if (prevP != slideP || prevI != slideI || prevD != slideD) {
-            slideController.setPID(slideP, slideI, slideD);
-            prevP = slideP;
-            prevI = slideI;
-            prevD = slideD;
-        }
-
-        double slidePrecentOfExtension = Math.pow(slideMotorRight.getCurrentPosition() / (extensionLimitTicks),slideffexpo);
-        double slideffDifference = slideffMax - slideffBase;
-        double slideks = (1-slidePrecentOfExtension) * slideffDifference + slideffBase;
-        
-        if (controller2.dpadLeft()) {
-            armPitTarget = highBucketSampleArmPit;
-        }
-
-        if (controller2.dpadUp()) {
-            armPitTarget = vertArmPit;
-        }
-
-        if (controller2.dpadDown()) {
-            armPitTarget = horArmPit;
-        }
-
-        if (controller2.dpadRight()) {
-            armPitTarget = highChamberEndArmPit;
-        }
-
-        double position = armPitMotor.getCurrentPosition();
-        double positionOffset = position + zeroOffset;
-        double armAngle = positionOffset / ticksPerDegreeArmPit;
-        double percentOfExtension = Math.pow(slideMotorRight.getCurrentPosition() / (extensionLimitTicks), ffexpo);
-        double kg = 0;
-
-        if (enable) {
-            double ffDifference = ffMax - ff;
-
-            if (position > ffHighAngleCutOff * ticksPerDegreeArmPit) {
-                ffDifference = ffDifference - 0.2;
-            }
-            kg = (ff * Math.cos((Math.toRadians(armAngle)))) + (ffDifference * percentOfExtension);
-            telemetry.addData("Kg", kg);
-            telemetry.addData("arm angle", armAngle);
-
-            if (position < ffLowAngleCutOff * ticksPerDegreeArmPit) {
-                kg = 0;
-            }
-        }
-
-        armPitMotor.setPower(armController.calculate(armPitMotor.getCurrentPosition(), armPitTarget) + kg);
-        double slidePower = slideks * Math.sin(Math.toRadians(armAngle));
-
-        if (controller2.triangle()){
-            slideSetpoint = highSpecExtSetPoint;
-            //armPitTarget = highSpecPitSetPoint;
-        }
-
-        if (controller2.cross()){
-            slideSetpoint = highSampleExtSetPoint;
-            //armPitTarget = highSamplePitSetPoint;
-        }
-
-        if (controller2.square()){
-            slideSetpoint = lowSampleExtSetPoint;
-            //armPitTarget = lowSamplePitSetPoint;
-        }
-
-        if (controller2.right_trigger > 0.2) {
-            if (!controller2.circle() &&
-                    Math.abs(slideMotorRight.getCurrentPosition()) > extensionLimitTicks) {
-                slideMotorOut.setPower(0);
-                slideMotorLeft.setPower(0);
-                slideMotorRight.setPower(0);
-            } else {
-                slideMotorLeft.setPower(controller2.right_trigger * maxSlideSpeed);
-                slideMotorRight.setPower(controller2.right_trigger * maxSlideSpeed);
-                slideMotorOut.setPower(controller2.right_trigger * maxSlideSpeed);
-            }
-        } else if (controller2.left_trigger > 0.2) {
-            if (controller2.triangle() && (Math.abs(slideMotorRight.getCurrentPosition()) < specimenLimitTicks + retractFudgeLimitTicks)) {
-                slideMotorOut.setPower(0);
-                slideMotorLeft.setPower(0);
-                slideMotorRight.setPower(0);
-            } else {
-                slideMotorLeft.setPower(controller2.left_trigger * -maxSlideSpeed);
-                slideMotorRight.setPower(controller2.left_trigger * -maxSlideSpeed);
-                slideMotorOut.setPower(controller2.left_trigger * -maxSlideSpeed);
-            }
-        } else if (controller2.triangle() ){
-            slidePIDPower = slideController.calculate(slideMotorRight.getCurrentPosition(), slideSetpoint) + slidePower;
-            slideMotorOut.setPower(slidePIDPower);
-            slideMotorLeft.setPower(slidePIDPower);
-            slideMotorRight.setPower(slidePIDPower);
-        } else {
-            slideMotorOut.setPower(0);
-            slideMotorLeft.setPower(0);
-            slideMotorRight.setPower(0);
-        }
-
-        telemetry.addData("Slide Position", slideMotorRight.getCurrentPosition());
-        telemetry.addData("Slide Extension Set point", slideSetpoint);
-        telemetry.addData("Slide PID Power", slidePIDPower);
-        telemetry.addData("right trigger value", controller2.right_trigger);
-        telemetry.addData("left trigger value", controller2.left_trigger);
-
-    }
+//    private static double armPitTarget;
+//    public static boolean slidePowerTester = true;
+//    public static double slideSetpoint = 0;
+//    public static double slideP = 0.03;
+//    public static double slideI = 0.000035;
+//    public static double slideD = 0.0026;
+//    public static double slideffexpo = 0.5;
+//    public static double slideffBase =0.4;
+//    public static double slideffMax = 0.58;
+//    public static double highSpecExtSetPoint = -364;
+//    public static double highSpecPitSetPoint = 800;
+//    public static double highSampleExtSetPoint = extensionLimitTicks;
+//    public static double highSamplePitSetPoint = 650;
+//    public static double lowSampleExtSetPoint = -500;
+//    public static double lowSamplePitSetPoint = 500;
+//    private final PIDController slideController = new PIDController(slideP, slideI, slideD, 0.18);
+//    private double prevP = slideP, prevI = slideI, prevD = slideD;
+//    private double slidePIDPower = 0;
+//
+//    @Override
+//    public void loop() {
+//        super.loop();
+//
+//        if (prevP != slideP || prevI != slideI || prevD != slideD) {
+//            slideController.setPID(slideP, slideI, slideD);
+//            prevP = slideP;
+//            prevI = slideI;
+//            prevD = slideD;
+//        }
+//
+//        double slidePrecentOfExtension = Math.pow(slideMotorRight.getCurrentPosition() / (extensionLimitTicks),slideffexpo);
+//        if (slideMotorRight.getCurrentPosition() > 0)
+//        {
+//            slidePrecentOfExtension = 0.0;
+//        }
+//        double slideffDifference = slideffMax - slideffBase;
+//        double slideks = slidePrecentOfExtension * slideffDifference + slideffBase;
+//
+//
+//        if (controller2.dpadLeft()) {
+//            armPitTarget = highBucketSampleArmPit;
+//        }
+//
+//        if (controller2.dpadUp()) {
+//            armPitTarget = vertArmPit;
+//        }
+//
+//        if (controller2.dpadDown()) {
+//            armPitTarget = horArmPit;
+//        }
+//
+//        if (controller2.dpadRight()) {
+//            armPitTarget = highChamberEndArmPit;
+//        }
+//
+//        double position = armPitMotor.getCurrentPosition();
+//        double positionOffset = position + zeroOffset;
+//        double armAngle = positionOffset / ticksPerDegreeArmPit;
+//        double kg = 0;
+//        double percentOfExtension = Math.pow(slideMotorRight.getCurrentPosition() / (extensionLimitTicks), ffexpo);
+//
+//        if (enable) {
+//            double ffDifference = ffMax - ff;
+//
+//            if (position > ffHighAngleCutOff * ticksPerDegreeArmPit) {
+//                ffDifference = ffDifference - 0.2;
+//            }
+//            kg = (ff * Math.cos((Math.toRadians(armAngle)))) + (ffDifference * percentOfExtension);
+//            telemetry.addData("Kg", kg);
+//            telemetry.addData("arm angle", armAngle);
+//
+//            if (position < ffLowAngleCutOff * ticksPerDegreeArmPit) {
+//                kg = 0;
+//            }
+//        }
+//
+//        armPitMotor.setPower(armController.calculate(armPitMotor.getCurrentPosition(), armPitTarget) + kg);
+//        double slidePower = slideks * Math.sin(Math.toRadians(armAngle));
+//
+//        if (controller2.triangle()){
+//            slideSetpoint = highSpecExtSetPoint;
+//            armPitTarget = highSpecPitSetPoint;
+//        }
+//
+//        if (controller2.cross()){
+//            slideSetpoint = highSampleExtSetPoint;
+//            armPitTarget = highSamplePitSetPoint;
+//        }
+//
+//        if (controller2.square()){
+//            slideSetpoint = lowSampleExtSetPoint;
+//            armPitTarget = lowSamplePitSetPoint;
+//        }
+//
+//
+//        if (controller2.right_trigger > 0.2) {
+//          /*
+//            if (!controller2.circle() &&
+//                    Math.abs(slideMotorRight.getCurrentPosition()) > extensionLimitTicks) {
+//                slideMotorOut.setPower(0);
+//                slideMotorLeft.setPower(0);
+//                slideMotorRight.setPower(0);
+//            } else {
+//            */
+//                slideMotorLeft.setPower(controller2.right_trigger * maxSlideSpeed);
+//                slideMotorRight.setPower(controller2.right_trigger * maxSlideSpeed);
+//                slideMotorOut.setPower(controller2.right_trigger * maxSlideSpeed);
+//            //}
+//        } else if (controller2.left_trigger > 0.2) {
+//
+//            if (controller2.triangle() && (Math.abs(slideMotorRight.getCurrentPosition()) < specimenLimitTicks + retractFudgeLimitTicks)) {
+//                slideMotorOut.setPower(0);
+//                slideMotorLeft.setPower(0);
+//                slideMotorRight.setPower(0);
+//            } else {
+//                slideMotorLeft.setPower(controller2.left_trigger * -maxSlideSpeed);
+//                slideMotorRight.setPower(controller2.left_trigger * -maxSlideSpeed);
+//                slideMotorOut.setPower(controller2.left_trigger * -maxSlideSpeed);
+//            }
+//        } else if (controller2.triangle() || controller2.square() || controller2.cross() ){
+//            double pid = slideController.calculate(slideMotorRight.getCurrentPosition(), slideSetpoint);
+//            slidePIDPower = -(pid + slidePower);
+//            slideMotorOut.setPower(slidePIDPower);
+//            slideMotorLeft.setPower(slidePIDPower);
+//            slideMotorRight.setPower(slidePIDPower);
+//            dashboardTelemetry.addData("pid", pid);
+//        } else {
+//            slideMotorOut.setPower(0);
+//            slideMotorLeft.setPower(0);
+//            slideMotorRight.setPower(0);
+//        }
+//
+//        telemetry.addData("Slide PID Power", slidePIDPower);
+//        telemetry.addData("Slide Position", slideMotorRight.getCurrentPosition());
+//        telemetry.addData("Slide Extension Set point", slideSetpoint);
+//        telemetry.addData("right trigger value", controller2.right_trigger);
+//        telemetry.addData("left trigger value", controller2.left_trigger);
+//        telemetry.addData("slideP",slideP);
+//        telemetry.addData("slideI", slideI);
+//        telemetry.addData("slideD", slideD);
+//
+//        dashboardTelemetry.addData("Slide PID Power", slidePIDPower);
+//        dashboardTelemetry.addData("Slide Position", slideMotorRight.getCurrentPosition());
+//        dashboardTelemetry.addData("Slide Extension Set point", slideSetpoint);
+//        dashboardTelemetry.addData("right trigger value", controller2.right_trigger);
+//        dashboardTelemetry.addData("left trigger value", controller2.left_trigger);
+//        dashboardTelemetry.addData("slideP",slideP);
+//        dashboardTelemetry.addData("slideI", slideI);
+//        dashboardTelemetry.addData("slideD", slideD);
+//
+//    }
 }

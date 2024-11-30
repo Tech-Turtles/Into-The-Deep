@@ -21,6 +21,7 @@ public class PID extends OpMode {
 }*/
 package org.firstinspires.ftc.teamcode.teleop;
 
+import static org.firstinspires.ftc.teamcode.FeedForwardTuner.extensionLimitTicks;
 import static org.firstinspires.ftc.teamcode.FeedForwardTuner.ffexpo;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -29,6 +30,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.RobotHardware;
+import org.firstinspires.ftc.teamcode.utility.PIDController;
 
 @TeleOp(name = "Main PID")
 @Config
@@ -43,39 +45,19 @@ public class MainPID extends RobotHardware {
     public static double maxSlideSpeed = 1.0;
     public static double maxArmSpeed = 1.0;
     public static double ticksPerRotation = 537.7 ;
-
     public static double horLimitRotations = 1.55;
-
     public static double specimenLimitTicks = 364;
     public static double retractFudgeLimitTicks = 20;
     public static double armLowerLimit = -1667;
     public static double armUpperLimit = 950 ;
-
     private static double armPitRiseTime = 1; //seconds, not firsts
-
     private static double loopRate =  100; //Hz
-
     public static double armPitTotalEncoderTicks = Math.abs(armLowerLimit) + armUpperLimit;
-
     private static double armPitPidStep = (armPitTotalEncoderTicks / (armPitRiseTime * loopRate));
-    /*
-    time to get all the way (in sec)
-    rate that the loop executs at (200 updates /sec? )
-    endoder tics for all the way
-    amount to add on
-
-     */
-
-
-
     public static double highBucketSampleArmPit = -500;
-
     public static double vertArmPit = 700;
-
     public static double horArmPit = -1500;
-
     public static double highChamberEndArmPit = -50;
-
     public static boolean enable = true;
     public static double ff = 0.145;
     public static  double ffMax = 0.3;
@@ -83,20 +65,29 @@ public class MainPID extends RobotHardware {
     public static double ticksPerDegreeArmPit = 22.5096444;
     public static double ffHighAngleCutOff = 90 ;
     public static double ffLowAngleCutOff = -10 ;
-
     public static double ffCuttoffCoEff= 0.4;
-
-
     private double armPitTarget = 0;
-
-
-
-
     // Flag to control whether slow mode is on or not
     private boolean slowModeEnabled = false;
     private boolean intakeOn;
-
     private double prevP = pCoeffPID, prevI = iCoeffPID, prevD = dCoeffPID;
+    public static boolean slidePowerTester = true;
+    public static double slideSetpoint = 0;
+    public static double slideP = 0.028;
+    public static double slideI = 0.028;
+    public static double slideD = 0.00004;
+    public static double slideffexpo = 0.5;
+    public static double slideffBase =0.4;
+    public static double slideffMax = 0.58;
+    public static double highSpecExtSetPoint = -364;
+    public static double highSpecPitSetPoint = 800;
+    public static double highSampleExtSetPoint = extensionLimitTicks;
+    public static double highSamplePitSetPoint = 650;
+    public static double lowSampleExtSetPoint = -500;
+    public static double lowSamplePitSetPoint = 500;
+    private final PIDController slideController = new PIDController(slideP, slideI, slideD, 0.018);
+    private double prevSlideP = slideP, prevSlideI = slideI, prevSlideD = slideD;
+    private double slidePIDPower = 0;
 
     @Override
     public void init() {
@@ -142,28 +133,101 @@ public class MainPID extends RobotHardware {
             intakeOn = false;
         }
 
-        if (controller2.right_trigger > 0.2) {
-            if (!controller2.circle() &&
-                    Math.abs( slideMotorRight.getCurrentPosition()) > extensionLimitTicks) {
-                slideMotorOut.setPower(0);
-                slideMotorLeft.setPower(0);
-                slideMotorRight.setPower(0);
+        if (prevSlideP != slideP || prevSlideI != slideI || prevSlideD != slideD) {
+            slideController.setPID(slideP, slideI, slideD);
+            slideController.reset();
+            prevSlideP = slideP;
+            prevSlideI = slideI;
+            prevSlideD = slideD;
+        }
+
+        double slidePrecentOfExtension = Math.pow(slideMotorRight.getCurrentPosition() / (extensionLimitTicks),slideffexpo);
+        if (Double.isNaN(slidePrecentOfExtension))
+        {
+            slidePrecentOfExtension = 0.0;
+        }
+        double slideffDifference = slideffMax - slideffBase;
+        double slideks = slidePrecentOfExtension * slideffDifference + slideffBase;
+
+
+        if (controller2.dpadLeft()) {
+            armPitTarget = highBucketSampleArmPit;
+        }
+
+        if (controller2.dpadUp()) {
+            armPitTarget = vertArmPit;
+        }
+
+        if (controller2.dpadDown()) {
+            armPitTarget = horArmPit;
+        }
+
+        if (controller2.dpadRight()) {
+            armPitTarget = highChamberEndArmPit;
+        }
+
+        double position = armPitMotor.getCurrentPosition();
+        double positionOffset = position + zeroOffset;
+        double armAngle = positionOffset / ticksPerDegreeArmPit;
+        double kg = 0;
+        double percentOfExtension = Math.pow(slideMotorRight.getCurrentPosition() / (extensionLimitTicks), ffexpo);
+
+        if (enable) {
+            double ffDifference = ffMax - ff;
+
+            if (position > ffHighAngleCutOff * ticksPerDegreeArmPit) {
+                ffDifference = ffDifference - 0.2;
             }
-            else if (controller2.triangle() && (
-                    Math.abs( slideMotorRight.getCurrentPosition()) > specimenLimitTicks))
-            {
+            kg = (ff * Math.cos((Math.toRadians(armAngle)))) + (ffDifference * percentOfExtension);
+            telemetry.addData("Kg", kg);
+            telemetry.addData("arm angle", armAngle);
+
+            if (position < ffLowAngleCutOff * ticksPerDegreeArmPit) {
+                kg = 0;
+            }
+        }
+
+        armPitMotor.setPower(armController.calculate(armPitMotor.getCurrentPosition(), armPitTarget) + kg);
+        double slidePower = slideks * Math.sin(Math.toRadians(armAngle));
+
+        if (Double.isNaN(slidePower)) {
+            slideMotorOut.setPower(0);
+            slideMotorLeft.setPower(0);
+            slideMotorRight.setPower(0);
+        }
+
+        if (controller2.triangle()){
+            slideSetpoint = highSpecExtSetPoint;
+            armPitTarget = highSpecPitSetPoint;
+        }
+
+        if (controller2.cross()){
+            slideSetpoint = highSampleExtSetPoint;
+            armPitTarget = highSamplePitSetPoint;
+        }
+
+        if (controller2.square()){
+            slideSetpoint = lowSampleExtSetPoint;
+            armPitTarget = lowSamplePitSetPoint;
+        }
+
+
+        if (controller2.right_trigger > 0.2) {
+          /*
+            if (!controller2.circle() &&
+                    Math.abs(slideMotorRight.getCurrentPosition()) > extensionLimitTicks) {
                 slideMotorOut.setPower(0);
                 slideMotorLeft.setPower(0);
                 slideMotorRight.setPower(0);
             } else {
-                slideMotorLeft.setPower(controller2.right_trigger * maxSlideSpeed);
-                slideMotorRight.setPower(controller2.right_trigger * maxSlideSpeed);
-                slideMotorOut.setPower(controller2.right_trigger * maxSlideSpeed);
-            }
+            */
+            slideMotorLeft.setPower(controller2.right_trigger * maxSlideSpeed);
+            slideMotorRight.setPower(controller2.right_trigger * maxSlideSpeed);
+            slideMotorOut.setPower(controller2.right_trigger * maxSlideSpeed);
+            //}
         } else if (controller2.left_trigger > 0.2) {
 
-            if (controller2.triangle() && (Math.abs( slideMotorRight.getCurrentPosition()) < specimenLimitTicks + retractFudgeLimitTicks))
-            {
+            if (controller2.triangle() && (Math.abs(slideMotorRight.getCurrentPosition()) < specimenLimitTicks + retractFudgeLimitTicks)) {
                 slideMotorOut.setPower(0);
                 slideMotorLeft.setPower(0);
                 slideMotorRight.setPower(0);
@@ -172,148 +236,18 @@ public class MainPID extends RobotHardware {
                 slideMotorRight.setPower(controller2.left_trigger * -maxSlideSpeed);
                 slideMotorOut.setPower(controller2.left_trigger * -maxSlideSpeed);
             }
+        } else if (controller2.triangle() || controller2.square() || controller2.cross() ){
+            double pid = slideController.calculate(slideMotorRight.getCurrentPosition(), slideSetpoint);
+            slidePIDPower = -(pid + slidePower);
+            slideMotorOut.setPower(slidePIDPower);
+            slideMotorLeft.setPower(slidePIDPower);
+            slideMotorRight.setPower(slidePIDPower);
+            dashboardTelemetry.addData("pid", pid);
         } else {
             slideMotorOut.setPower(0);
             slideMotorLeft.setPower(0);
             slideMotorRight.setPower(0);
         }
-        /*
-         declare arm target V
-         increase arm target when dpad up,
-         decrease arm target when dpad down
-
-         make sure taget dosent go ourside of motor upplimit or motorlowerlimitV
-
-
-         pid calculate using motor target and the encoder
-         dpadup (set speed motorspeed = pid calculate)
-
-        */
-
- /*
-        if (controller2.dpadUp()) {
-            if (armPitMotor.getCurrentPosition() > armUpperLimit) {
-                armPitMotor.setPower(0);
-            } else {
-                armPitMotor.setPower(maxArmSpeed);
-                armPitTarget = armPitMotor.getCurrentPosition();
-            }
-        } else {
-            armPitMotor.setPower(armPitPID.calculate(armPitMotor.getCurrentPosition(), armPitTarget));
-        }
-*/
-
-        if (controller2.dpadLeft()) {
-            armPitTarget = highBucketSampleArmPit;
-        }
-
-        if (controller2.dpadUp()){
-            armPitTarget = vertArmPit;
-        }
-
-        if (controller2.dpadDown()){
-            armPitTarget = horArmPit;
-        }
-
-       if (controller2.dpadRight()){
-           armPitTarget = highChamberEndArmPit;
-        }
-       if (controller2.square()){
-           armPitTarget = wallSpecimenPit;
-       }
-
-       /*
-        if (controller2.dpadUp()) {
-            armPitTarget = armPitTarget + armPitPidStep;
-            if (armPitTarget > armUpperLimit) {
-                armPitTarget = armUpperLimit;
-            }
-        }
-
-        if (controller2.dpadLeft()) {
-            armPitTarget = armPitTarget + (armPitPidStep / 2);
-            if (armPitTarget > armUpperLimit) {
-                armPitTarget = armUpperLimit;
-            }
-        }
-
-        if (controller2.dpadDown()) {
-            armPitTarget = armPitTarget - armPitPidStep;
-            if (armPitTarget < armLowerLimit) {
-                armPitTarget = armLowerLimit;
-            }
-        }
-
-        if (controller2.dpadRight()) {
-            armPitTarget = armPitTarget - (armPitPidStep / 2);
-            if (armPitTarget < armLowerLimit) {
-                armPitTarget = armLowerLimit;
-            }
-        }
- */
-
-        double position = armPitMotor.getCurrentPosition();
-        double positionOffset = position + zeroOffset;
-        double armAngle = positionOffset / ticksPerDegreeArmPit;
-        double percentOfExtension = Math.pow(slideMotorRight.getCurrentPosition() / (extensionLimitTicks),ffexpo);
-        double kg = 0;
-
-        /*
-        if (ffMaxPrev != ffMax || ffPrev != ff) {
-            ffMaxPrev = ffMax;
-            ffPrev = ff;
-        }
-        */
-
-        if (enable) {
-            double ffDifference = ffMax -ff;
-
-            if (position > ffHighAngleCutOff* ticksPerDegreeArmPit){
-                ffDifference = ffDifference-ffCuttoffCoEff;
-            }
-                kg = (ff * Math.cos((Math.toRadians(armAngle)))) + (ffDifference * percentOfExtension);
-                telemetry.addData("Kg", kg);
-                telemetry.addData("arm angle", armAngle);
-
-                if (position < ffLowAngleCutOff * ticksPerDegreeArmPit){
-                    kg = 0;
-                }
-        }
-        armPitMotor.setPower(armController.calculate(armPitMotor.getCurrentPosition(), armPitTarget) + kg );
-
-
-        /*
-        if (controller2.dpadUp()) {
-            if  (armPitMotor.getCurrentPosition() > armUpperLimit)
-            {
-                armPitMotor.setPower(0);
-            }
-            else
-                armPitMotor.setPower(maxArmSpeed);
-        } else if (controller2.dpadDown()) {
-            if  (armPitMotor.getCurrentPosition() < armLowerLimit)
-            {
-                armPitMotor.setPower(0);
-            }
-            else
-                armPitMotor.setPower(-1.0 * maxArmSpeed);
-        } else if (controller2.dpadRight()) {
-            if  (armPitMotor.getCurrentPosition() < armLowerLimit)
-            {
-                armPitMotor.setPower(0);
-            }
-            else
-                armPitMotor.setPower(-1.0 * maxArmSpeed / 2.0);
-        } else if (controller2.dpadLeft()) {
-            if  (armPitMotor.getCurrentPosition() > armUpperLimit)
-            {
-                armPitMotor.setPower(0);
-            }
-            else
-                armPitMotor.setPower( maxArmSpeed / 2.0);
-        } else {
-            armPitMotor.setPower(0.0);
-        } */
 
         // Reset gyro angle if triangle is pressed
         if (controller1.triangleOnce()){
@@ -371,10 +305,21 @@ public class MainPID extends RobotHardware {
                 intakeSensor.getNormalizedColors().red, intakeSensor.getNormalizedColors().green,
                 intakeSensor.getNormalizedColors().blue, intakeSensor.getNormalizedColors().alpha);
 
+
         telemetry.addData("Max Extension Ticks", (ticksPerRotation * horLimitRotations));
         telemetry.addData("Arm Pit Set Point", (armPitTarget));
         telemetry.addData("Arm Pit motor power", (armController.calculate(armPitMotor.getCurrentPosition(), armPitTarget)));
         telemetry.addData("Arm Pit PID Steps", (armPitPidStep));
+        telemetry.addData("extension power", ((controller2.right_trigger * maxSlideSpeed)));
+
+        dashboardTelemetry.addData("Slide PID Power", slidePIDPower);
+        dashboardTelemetry.addData("Slide Position", slideMotorRight.getCurrentPosition());
+        dashboardTelemetry.addData("Slide Extension Set point", slideSetpoint);
+        dashboardTelemetry.addData("right trigger value", controller2.right_trigger);
+        dashboardTelemetry.addData("left trigger value", controller2.left_trigger);
+        dashboardTelemetry.addData("slideP",slideP);
+        dashboardTelemetry.addData("slideI", slideI);
+        dashboardTelemetry.addData("slideD", slideD);
 
     }
 }

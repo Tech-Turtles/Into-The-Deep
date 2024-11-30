@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -10,6 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.utility.Controller;
 import org.firstinspires.ftc.teamcode.utility.PIDController;
 @Config
@@ -30,6 +32,9 @@ public class RobotHardware extends OpMode {
     public static double dCoeffPID = 0.00006;
 
     protected PIDController armController = new PIDController(pCoeffPID,iCoeffPID,dCoeffPID);
+
+    FtcDashboard dashboard = FtcDashboard.getInstance();
+    protected Telemetry dashboardTelemetry = dashboard.getTelemetry();
 
     @Override
     public void init() {
@@ -103,6 +108,7 @@ public class RobotHardware extends OpMode {
     public void loop() {
         controller1.update();
         controller2.update();
+        dashboardTelemetry.update();
     }
 
     @Override
