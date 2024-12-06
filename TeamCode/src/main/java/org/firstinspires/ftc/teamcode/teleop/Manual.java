@@ -1,5 +1,13 @@
 package org.firstinspires.ftc.teamcode.teleop;
 
+import static org.firstinspires.ftc.teamcode.Constants.ARM_LOWER_LIMIT;
+import static org.firstinspires.ftc.teamcode.Constants.ARM_UPPER_LIMIT;
+import static org.firstinspires.ftc.teamcode.Constants.COLOR_SENSOR_STOP_DISTANCE;
+import static org.firstinspires.ftc.teamcode.Constants.RETRACT_FUDGE_LIMIT_TICKS;
+import static org.firstinspires.ftc.teamcode.Constants.SLIDE_HORIZONTAL_LIMIT_ROTATIONS;
+import static org.firstinspires.ftc.teamcode.Constants.SLIDE_TICKS_PER_ROTATION;
+import static org.firstinspires.ftc.teamcode.Constants.SPECIMEN_LIMIT_TICKS;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -7,24 +15,15 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.RobotHardware;
 
-@TeleOp(name = "Manual")
+@TeleOp(name = "Manual", group = "B")
 @Config
 public class Manual extends RobotHardware {
     public static boolean colorSensorStop = true;
-    public static double colorSensorStopDistance = 0.4;
     // Max speed in slow mode set to 40%
     private final double slowModeMultiplier = 0.4;
     public static double maxIntakeSpeed = 1.0;
     public static double maxSlideSpeed = 1.0;
     public static double maxArmSpeed = 1.0;
-    public static double ticksPerRotation = 537.7 ;
-
-    public static double horLimitRotations = 1.55;
-
-    public static double specimenLimitTicks = 364;
-    public static double retractFudgeLimitTicks = 20;
-    public static double armLowerLimit = -1667;
-    public static double armUpperLimit = 950;
 
     public static double armSetpoint = 0;
 
@@ -43,10 +42,8 @@ public class Manual extends RobotHardware {
     public void loop() {
         super.loop();
 
-        double extensionLimitTicks = (ticksPerRotation * horLimitRotations);
-
         if (controller1.rightBumper()){
-            if (!colorSensorStop || intakeSensor.getDistance(DistanceUnit.INCH) > colorSensorStopDistance) {
+            if (!colorSensorStop || intakeSensor.getDistance(DistanceUnit.INCH) > COLOR_SENSOR_STOP_DISTANCE) {
                 intakeLeft.setPower(maxIntakeSpeed);
                 intakeRight.setPower(maxIntakeSpeed);
                 intakeOn = true;
@@ -62,7 +59,7 @@ public class Manual extends RobotHardware {
         } else if (!intakeOn) {
             intakeLeft.setPower(0);
             intakeRight.setPower(0);
-        } else if (colorSensorStop && intakeSensor.getDistance(DistanceUnit.INCH) < colorSensorStopDistance) {
+        } else if (colorSensorStop && intakeSensor.getDistance(DistanceUnit.INCH) < COLOR_SENSOR_STOP_DISTANCE) {
             intakeLeft.setPower(0);
             intakeRight.setPower(0);
             intakeOn = false;
@@ -70,13 +67,13 @@ public class Manual extends RobotHardware {
 
         if (controller1.right_trigger > 0.2) {
             if (!controller1.circle() &&
-                    Math.abs( slideMotorRight.getCurrentPosition()) > extensionLimitTicks) {
+                    Math.abs( slideMotorRight.getCurrentPosition()) > getExtensionLimitTicks()) {
                 slideMotorOut.setPower(0);
                 slideMotorLeft.setPower(0);
                 slideMotorRight.setPower(0);
             }
             else if (controller1.triangle() && (
-                    Math.abs( slideMotorRight.getCurrentPosition()) > specimenLimitTicks))
+                    Math.abs( slideMotorRight.getCurrentPosition()) > getExtensionLimitTicks()))
             {
                 slideMotorOut.setPower(0);
                 slideMotorLeft.setPower(0);
@@ -88,7 +85,7 @@ public class Manual extends RobotHardware {
             }
         } else if (controller1.left_trigger > 0.2) {
 
-            if (controller1.triangle() && (Math.abs( slideMotorRight.getCurrentPosition()) < specimenLimitTicks + retractFudgeLimitTicks))
+            if (controller1.triangle() && (Math.abs( slideMotorRight.getCurrentPosition()) < SPECIMEN_LIMIT_TICKS + RETRACT_FUDGE_LIMIT_TICKS))
             {
                 slideMotorOut.setPower(0);
                 slideMotorLeft.setPower(0);
@@ -105,28 +102,28 @@ public class Manual extends RobotHardware {
         }
 
         if (controller1.dpadUp()) {
-           if  (armPitMotor.getCurrentPosition() > armUpperLimit)
+           if  (armPitMotor.getCurrentPosition() > ARM_UPPER_LIMIT)
            {
                armPitMotor.setPower(0);
            }
             else
                 armPitMotor.setPower(maxArmSpeed);
         } else if (controller1.dpadDown()) {
-            if  (armPitMotor.getCurrentPosition() < armLowerLimit)
+            if  (armPitMotor.getCurrentPosition() < ARM_LOWER_LIMIT)
             {
                 armPitMotor.setPower(0);
             }
             else
                 armPitMotor.setPower(-1.0 * maxArmSpeed);
         } else if (controller1.dpadRight()) {
-            if  (armPitMotor.getCurrentPosition() < armLowerLimit)
+            if  (armPitMotor.getCurrentPosition() < ARM_LOWER_LIMIT)
             {
                 armPitMotor.setPower(0);
             }
             else
                 armPitMotor.setPower(-1.0 * maxArmSpeed / 2.0);
         } else if (controller1.dpadLeft()) {
-            if  (armPitMotor.getCurrentPosition() > armUpperLimit)
+            if  (armPitMotor.getCurrentPosition() > ARM_UPPER_LIMIT)
             {
                 armPitMotor.setPower(0);
             }
@@ -190,6 +187,6 @@ public class Manual extends RobotHardware {
                 intakeSensor.getNormalizedColors().red, intakeSensor.getNormalizedColors().green,
                 intakeSensor.getNormalizedColors().blue, intakeSensor.getNormalizedColors().alpha);
 
-        telemetry.addData("Max Extension Ticks", (ticksPerRotation * horLimitRotations));
+        telemetry.addData("Max Extension Ticks", (SLIDE_TICKS_PER_ROTATION * SLIDE_HORIZONTAL_LIMIT_ROTATIONS));
     }
 }

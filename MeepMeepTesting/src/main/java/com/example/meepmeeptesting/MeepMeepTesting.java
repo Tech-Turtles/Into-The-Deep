@@ -15,7 +15,7 @@ public class MeepMeepTesting {
 
     private static final double robotW = 17.8;
     private static final double robotH = 16;
-    private static final double robotHalfW = robotH/2.0;
+    private static final double robotHalfW = robotW/2.0;
 
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(700);
