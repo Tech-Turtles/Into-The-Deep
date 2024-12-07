@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.Constants.ARM_BUCKET_SAMPLE_ANGLE;
 import static org.firstinspires.ftc.teamcode.Constants.ARM_HIGH_CHAMBER_END_POSITION;
 import static org.firstinspires.ftc.teamcode.Constants.ARM_HIGH_SAMPLE_PIVOT_ANGLE;
 import static org.firstinspires.ftc.teamcode.Constants.ARM_HIGH_SPEC_PIVOT_ANGLE;
+import static org.firstinspires.ftc.teamcode.Constants.ARM_HIGH_SPEC_PLACE_PIVOT_ANGLE;
 import static org.firstinspires.ftc.teamcode.Constants.ARM_HORIZONTAL_POSITION;
 import static org.firstinspires.ftc.teamcode.Constants.ARM_LOW_SAMPLE_PIVOT_ANGLE;
 import static org.firstinspires.ftc.teamcode.Constants.ARM_VERTICAL_POSITION;
@@ -83,6 +84,12 @@ public class MainPID extends RobotHardware {
         if (controller2.square()) {
             slideSetpoint = LOW_SAMPLE_EXT_SLIDE;
             armPitTarget = ARM_LOW_SAMPLE_PIVOT_ANGLE;
+        }
+
+
+        if (controller2.circle()){
+            armPitTarget = ARM_HIGH_SPEC_PLACE_PIVOT_ANGLE;
+
         }
 
         double armPower = calculateArmPower(armPitTarget);

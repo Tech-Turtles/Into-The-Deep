@@ -30,9 +30,11 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.utility.Controller;
+import org.firstinspires.ftc.teamcode.utility.ElapsedTimer;
 import org.firstinspires.ftc.teamcode.utility.PIDController;
 
 /**
@@ -55,8 +57,8 @@ public class RobotHardware extends OpMode {
     // ---------------------------------------------------
     // Dashboard variables
     public static boolean useFeedforwardCutoff = false;
-    protected final PIDController armController = new PIDController(ARM_P, ARM_I, ARM_D, 0.018);
-    protected final PIDController slideController = new PIDController(SLIDE_P, SLIDE_I, SLIDE_D, 0.018);
+    protected  PIDController armController = new PIDController(ARM_P, ARM_I, ARM_D, 0.018);
+    protected  PIDController slideController = new PIDController(SLIDE_P, SLIDE_I, SLIDE_D, 0.018);
     protected final FtcDashboard dashboard = FtcDashboard.getInstance();
     // Slide motor right has the slide encoder
     protected DcMotorEx frontLeft, frontRight, rearLeft, rearRight,
@@ -68,6 +70,9 @@ public class RobotHardware extends OpMode {
     protected TelemetryPacket packet = new TelemetryPacket();
     private double prevArmP = ARM_P, prevArmI = ARM_I, prevArmD = ARM_D;
     private double prevSlideP = SLIDE_P, prevSlideI = SLIDE_I, prevSlideD = SLIDE_D;
+
+    ElapsedTimer timer;
+
 
     /**
      * Initializes all hardware components and their configurations.
@@ -130,6 +135,7 @@ public class RobotHardware extends OpMode {
         imu.initialize(parameters);
 
         telemetry.setDisplayFormat(Telemetry.DisplayFormat.HTML);
+        timer = new ElapsedTimer();
     }
 
     /**
@@ -145,11 +151,14 @@ public class RobotHardware extends OpMode {
         controller2.update();
         dashboard.sendTelemetryPacket(packet);
         packet = new TelemetryPacket();
+        timer.updatePeriodTime();
+        displayData("Loop Time", timer.getAveragePeriodSec());
     }
 
     @Override
     public void start() {
         super.start();
+        timer.clearPastPeriods();
     }
 
     /**
@@ -164,6 +173,8 @@ public class RobotHardware extends OpMode {
         controller2.update();
         dashboard.sendTelemetryPacket(packet);
         packet = new TelemetryPacket();
+        timer.updatePeriodTime();
+        displayData("Loop Time", timer.getAveragePeriodSec());
     }
 
     /**
