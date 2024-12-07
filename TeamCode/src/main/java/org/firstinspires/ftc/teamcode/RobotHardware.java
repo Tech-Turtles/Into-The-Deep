@@ -21,6 +21,7 @@ import static org.firstinspires.ftc.teamcode.Constants.SLIDE_TICKS_PER_ROTATION;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -51,6 +52,12 @@ import org.firstinspires.ftc.teamcode.utility.PIDController;
 @Config
 public class RobotHardware extends OpMode {
 
+    // ---------------------------------------------------
+    // Dashboard variables
+    public static boolean useFeedforwardCutoff = false;
+    protected final PIDController armController = new PIDController(ARM_P, ARM_I, ARM_D, 0.018);
+    protected final PIDController slideController = new PIDController(SLIDE_P, SLIDE_I, SLIDE_D, 0.018);
+    protected final FtcDashboard dashboard = FtcDashboard.getInstance();
     // Slide motor right has the slide encoder
     protected DcMotorEx frontLeft, frontRight, rearLeft, rearRight,
             armPitMotor, slideMotorLeft, slideMotorRight, slideMotorOut;
@@ -58,19 +65,9 @@ public class RobotHardware extends OpMode {
     protected RevColorSensorV3 intakeSensor;
     protected IMU imu;
     protected Controller controller1, controller2;
-
-    protected final PIDController armController = new PIDController(ARM_P, ARM_I, ARM_D, 0.018);
+    protected TelemetryPacket packet = new TelemetryPacket();
     private double prevArmP = ARM_P, prevArmI = ARM_I, prevArmD = ARM_D;
-
-    protected final PIDController slideController = new PIDController(SLIDE_P, SLIDE_I, SLIDE_D, 0.018);
     private double prevSlideP = SLIDE_P, prevSlideI = SLIDE_I, prevSlideD = SLIDE_D;
-
-    private final FtcDashboard dashboard = FtcDashboard.getInstance();
-    protected final Telemetry dashboardTelemetry = dashboard.getTelemetry();
-
-    // ---------------------------------------------------
-    // Dashboard variables
-    public static boolean useFeedforwardCutoff = false;
 
     /**
      * Initializes all hardware components and their configurations.
@@ -146,6 +143,8 @@ public class RobotHardware extends OpMode {
 
         controller1.update();
         controller2.update();
+        dashboard.sendTelemetryPacket(packet);
+        packet = new TelemetryPacket();
     }
 
     @Override
@@ -163,7 +162,8 @@ public class RobotHardware extends OpMode {
 
         controller1.update();
         controller2.update();
-        dashboardTelemetry.update();
+        dashboard.sendTelemetryPacket(packet);
+        packet = new TelemetryPacket();
     }
 
     /**
@@ -200,6 +200,7 @@ public class RobotHardware extends OpMode {
 
     /**
      * Sets power for both intake servos to control material intake.
+     *
      * @param power Power value for the intake system (-1.0 to 1.0).
      */
     protected void setIntakePower(double power) {
@@ -209,6 +210,7 @@ public class RobotHardware extends OpMode {
 
     /**
      * Sets power for all slide motors to control the slide mechanism.
+     *
      * @param power Power value for the slide motors (-1.0 to 1.0).
      */
     protected void setSlidePower(double power) {
@@ -219,6 +221,7 @@ public class RobotHardware extends OpMode {
 
     /**
      * Returns the current encoder position of the slide motor with the encoder.
+     *
      * @return Slide encoder position in ticks.
      */
     public double getSlideEncoderPosition() {
@@ -227,6 +230,7 @@ public class RobotHardware extends OpMode {
 
     /**
      * Calculates the maximum allowable slide extension based on ticks per rotation.
+     *
      * @return Maximum extension limit in ticks.
      */
     public double getExtensionLimitTicks() {
@@ -235,17 +239,19 @@ public class RobotHardware extends OpMode {
 
     /**
      * Displays data on both the Driver Station telemetry and the FTC Dashboard.
+     *
      * @param caption Caption or label for the data.
-     * @param data Data value to display.
+     * @param data    Data value to display.
      */
     public void displayData(String caption, Object data) {
         telemetry.addData(caption, data);
-        dashboardTelemetry.addData(caption, data);
+        packet.put(caption, data);
     }
 
     /**
      * Calculates feedforward power for the arm based on its angle and slide extension.
      * Includes optional feedforward cutoff adjustments for extreme angles.
+     *
      * @return Feedforward power value.
      */
     protected double calculateArmFeedforward() {
@@ -274,6 +280,7 @@ public class RobotHardware extends OpMode {
 
     /**
      * Calculates the total power required for the arm, combining PID output and feedforward.
+     *
      * @param setpoint Target position for the arm in ticks.
      * @return Total arm power value.
      */
@@ -284,6 +291,7 @@ public class RobotHardware extends OpMode {
     /**
      * Calculates feedforward power for the slide mechanism based on arm angle and slide extension.
      * Ensures feedforward is zero if the slides are fully retracted.
+     *
      * @return Feedforward power value for the slide mechanism.
      */
     protected double calculateSlideFeedforward() {

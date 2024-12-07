@@ -14,13 +14,11 @@ import org.firstinspires.ftc.teamcode.utility.Controller;
 @TeleOp(name = "Mecanum Test", group = "B")
 @Disabled
 public class MecanumTest extends OpMode {
+    // Max speed in slow mode set to 40%
+    private final double slowModeMultiplier = 0.4;
     protected DcMotor frontLeft, frontRight, rearLeft, rearRight;
     protected IMU imu;
     protected Controller controller1, controller2;
-
-
-    // Max speed in slow mode set to 40%
-    private final double slowModeMultiplier = 0.4;
     // Flag to control whether slow mode is on or not
     private boolean slowModeEnabled = false;
 
@@ -37,12 +35,12 @@ public class MecanumTest extends OpMode {
         controller1 = new Controller(gamepad1);
         controller2 = new Controller(gamepad2);
 
-         //Initialize IMU if needed
-         imu = hardwareMap.get(IMU.class, "IMU 1");
-         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-                 RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                 RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
-         imu.initialize(parameters);
+        //Initialize IMU if needed
+        imu = hardwareMap.get(IMU.class, "IMU 1");
+        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
+                RevHubOrientationOnRobot.LogoFacingDirection.UP,
+                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
+        imu.initialize(parameters);
         telemetry.addData("Status", "Initialized");
     }
 
@@ -58,7 +56,7 @@ public class MecanumTest extends OpMode {
         controller2.update();
 
         // Reset gyro angle if triangle is pressed
-        if (controller1.triangleOnce()){
+        if (controller1.triangleOnce()) {
             imu.resetYaw();
         }
 

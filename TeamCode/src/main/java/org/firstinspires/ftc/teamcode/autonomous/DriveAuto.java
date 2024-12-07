@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.autonomous;
 
+import static org.firstinspires.ftc.teamcode.Constants.robotHalfW;
+
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
@@ -10,11 +12,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 
-@Autonomous(name = "Drive Autonomous")
+@Autonomous(name = "Drive Autonomous", group = "B")
 public class DriveAuto extends LinearOpMode {
-    private static final double robotW = 17.8;
-    private static final double robotH = 16;
-    private static final double robotHalfW = robotW/2.0;
 
     @Override
     public void runOpMode() throws InterruptedException {

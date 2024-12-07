@@ -27,12 +27,11 @@ public class MainPID extends RobotHardware {
     public static boolean colorSensorStop = true;
     public static double maxIntakeSpeed = 1.0;
     public static double maxSlideSpeed = 1.0;
+    public static double slideSetpoint = 0;
     // Flag to control whether slow mode is on or not
     private boolean slowModeEnabled = false;
     private boolean intakeOn;
-
     private double armPitTarget = 0;
-    public static double slideSetpoint = 0;
 
     @Override
     public void init() {
@@ -71,17 +70,17 @@ public class MainPID extends RobotHardware {
             armPitTarget = ARM_HIGH_CHAMBER_END_POSITION;
         }
 
-        if (controller2.triangle()){
+        if (controller2.triangle()) {
             slideSetpoint = HIGH_SPEC_EXT_SLIDE;
             armPitTarget = ARM_HIGH_SPEC_PIVOT_ANGLE;
         }
 
-        if (controller2.cross()){
+        if (controller2.cross()) {
             slideSetpoint = HIGH_SAMPLE_EXT_SLIDE;
             armPitTarget = ARM_HIGH_SAMPLE_PIVOT_ANGLE;
         }
 
-        if (controller2.square()){
+        if (controller2.square()) {
             slideSetpoint = LOW_SAMPLE_EXT_SLIDE;
             armPitTarget = ARM_LOW_SAMPLE_PIVOT_ANGLE;
         }

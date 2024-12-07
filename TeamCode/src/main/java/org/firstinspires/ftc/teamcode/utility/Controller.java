@@ -7,15 +7,13 @@ public class Controller {
     private final double deadzone = 0.3;
 
     private final Gamepad gamepad;
-
+    public double left_stick_x, right_stick_x, left_stick_y, right_stick_y;
+    public double left_trigger, right_trigger;
     private int dpad_up, dpad_down, dpad_left, dpad_right;
     private int x, y, a, b, start;
     private int left_bumper, right_bumper;
     private int right_stick_button, left_stick_button;
     private int left_triggerAcc, right_triggerAcc;
-
-    public double left_stick_x, right_stick_x, left_stick_y, right_stick_y;
-    public double left_trigger, right_trigger;
 
     public Controller(Gamepad g) {
         gamepad = g;
@@ -98,20 +96,20 @@ public class Controller {
             right_bumper = 0;
         }
 
-        left_stick_x    = gamepad.left_stick_x;
-        left_stick_y    = gamepad.left_stick_y;
-        right_stick_x   = gamepad.right_stick_x;
-        right_stick_y   = gamepad.right_stick_y;
-        left_trigger    = gamepad.left_trigger;
-        right_trigger   = gamepad.right_trigger;
+        left_stick_x = gamepad.left_stick_x;
+        left_stick_y = gamepad.left_stick_y;
+        right_stick_x = gamepad.right_stick_x;
+        right_stick_y = gamepad.right_stick_y;
+        left_trigger = gamepad.left_trigger;
+        right_trigger = gamepad.right_trigger;
     }
 
     public boolean rightStickButton() {
-        return  0 < right_stick_button;
+        return 0 < right_stick_button;
     }
 
     public boolean leftStickButton() {
-        return  0 < left_stick_button;
+        return 0 < left_stick_button;
     }
 
     public boolean dpadUp() {
@@ -133,32 +131,32 @@ public class Controller {
     public boolean X() {
         return 0 < x;
     }
-    public boolean square()
-    {
+
+    public boolean square() {
         return X();
     }
 
     public boolean Y() {
         return 0 < y;
     }
-    public boolean triangle()
-    {
+
+    public boolean triangle() {
         return Y();
     }
 
     public boolean A() {
         return 0 < a;
     }
-    public boolean cross()
-    {
+
+    public boolean cross() {
         return A();
     }
 
     public boolean B() {
         return 0 < b;
     }
-    public boolean circle()
-    {
+
+    public boolean circle() {
         return B();
     }
 
@@ -209,32 +207,32 @@ public class Controller {
     public boolean XOnce() {
         return 1 == x;
     }
-    public boolean squareOnce()
-    {
+
+    public boolean squareOnce() {
         return XOnce();
     }
 
     public boolean YOnce() {
         return 1 == y;
     }
-    public boolean triangleOnce()
-    {
+
+    public boolean triangleOnce() {
         return YOnce();
     }
 
     public boolean AOnce() {
         return 1 == a;
     }
-    public boolean crossOnce()
-    {
+
+    public boolean crossOnce() {
         return AOnce();
     }
 
     public boolean BOnce() {
         return 1 == b;
     }
-    public boolean circleOnce()
-    {
+
+    public boolean circleOnce() {
         return BOnce();
     }
 
@@ -254,7 +252,7 @@ public class Controller {
         gamepad.setLedColor(r, g, b, durationMs);
     }
 
-    public double deadZone(double input,double deadzone) {
+    public double deadZone(double input, double deadzone) {
         if (Math.abs(input) <= deadzone) {
             return 0.0;
         } else {

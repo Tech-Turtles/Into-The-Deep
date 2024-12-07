@@ -1,25 +1,21 @@
 package org.firstinspires.ftc.teamcode.utility;
 
 
-/** Implements a PID control loop. */
+/**
+ * Implements a PID control loop.
+ */
 public class PIDController {
     private static int instances;
-
-    // Factor for "proportional" control
-    private double m_kp;
-
-    // Factor for "integral" control
-    private double m_ki;
-
-    // Factor for "derivative" control
-    private double m_kd;
-
-    // The error range where "integral" control applies
-    private double m_iZone = Double.POSITIVE_INFINITY;
-
     // The period (in seconds) of the loop that calls the controller
     private final double m_period;
-
+    // Factor for "proportional" control
+    private double m_kp;
+    // Factor for "integral" control
+    private double m_ki;
+    // Factor for "derivative" control
+    private double m_kd;
+    // The error range where "integral" control applies
+    private double m_iZone = Double.POSITIVE_INFINITY;
     private double m_maximumIntegral = 1.0;
 
     private double m_minimumIntegral = -1.0;
@@ -66,9 +62,9 @@ public class PIDController {
     /**
      * Allocates a PIDController with the given constants for kp, ki, and kd.
      *
-     * @param kp The proportional coefficient.
-     * @param ki The integral coefficient.
-     * @param kd The derivative coefficient.
+     * @param kp     The proportional coefficient.
+     * @param ki     The integral coefficient.
+     * @param kd     The derivative coefficient.
      * @param period The period between controller updates in seconds. Must be non-zero and positive.
      */
     public PIDController(double kp, double ki, double kd, double period) {
@@ -100,12 +96,30 @@ public class PIDController {
     }
 
     /**
+     * Get the Proportional coefficient.
+     *
+     * @return proportional coefficient
+     */
+    public double getP() {
+        return m_kp;
+    }
+
+    /**
      * Sets the Proportional coefficient of the PID controller gain.
      *
      * @param kp proportional coefficient
      */
     public void setP(double kp) {
         m_kp = kp;
+    }
+
+    /**
+     * Get the Integral coefficient.
+     *
+     * @return integral coefficient
+     */
+    public double getI() {
+        return m_ki;
     }
 
     /**
@@ -118,12 +132,30 @@ public class PIDController {
     }
 
     /**
+     * Get the Differential coefficient.
+     *
+     * @return differential coefficient
+     */
+    public double getD() {
+        return m_kd;
+    }
+
+    /**
      * Sets the Differential coefficient of the PID controller gain.
      *
      * @param kd differential coefficient
      */
     public void setD(double kd) {
         m_kd = kd;
+    }
+
+    /**
+     * Get the IZone range.
+     *
+     * @return Maximum magnitude of error to allow integral control.
+     */
+    public double getIZone() {
+        return m_iZone;
     }
 
     /**
@@ -140,42 +172,6 @@ public class PIDController {
             throw new IllegalArgumentException("IZone must be a non-negative number!");
         }
         m_iZone = iZone;
-    }
-
-    /**
-     * Get the Proportional coefficient.
-     *
-     * @return proportional coefficient
-     */
-    public double getP() {
-        return m_kp;
-    }
-
-    /**
-     * Get the Integral coefficient.
-     *
-     * @return integral coefficient
-     */
-    public double getI() {
-        return m_ki;
-    }
-
-    /**
-     * Get the Differential coefficient.
-     *
-     * @return differential coefficient
-     */
-    public double getD() {
-        return m_kd;
-    }
-
-    /**
-     * Get the IZone range.
-     *
-     * @return Maximum magnitude of error to allow integral control.
-     */
-    public double getIZone() {
-        return m_iZone;
     }
 
     /**
@@ -206,6 +202,15 @@ public class PIDController {
     }
 
     /**
+     * Returns the current setpoint of the PIDController.
+     *
+     * @return The current setpoint.
+     */
+    public double getSetpoint() {
+        return m_setpoint;
+    }
+
+    /**
      * Sets the setpoint for the PIDController.
      *
      * @param setpoint The desired setpoint.
@@ -222,15 +227,6 @@ public class PIDController {
         }
 
         m_velocityError = (m_positionError - m_prevError) / m_period;
-    }
-
-    /**
-     * Returns the current setpoint of the PIDController.
-     *
-     * @return The current setpoint.
-     */
-    public double getSetpoint() {
-        return m_setpoint;
     }
 
     /**
@@ -262,7 +258,9 @@ public class PIDController {
         m_maximumInput = maximumInput;
     }
 
-    /** Disables continuous input. */
+    /**
+     * Disables continuous input.
+     */
     public void disableContinuousInput() {
         m_continuous = false;
     }
@@ -332,7 +330,7 @@ public class PIDController {
      * Returns the next output of the PID controller.
      *
      * @param measurement The current measurement of the process variable.
-     * @param setpoint The new setpoint of the controller.
+     * @param setpoint    The new setpoint of the controller.
      * @return The next controller output.
      */
     public double calculate(double measurement, double setpoint) {
@@ -375,7 +373,9 @@ public class PIDController {
         return m_kp * m_positionError + m_ki * m_totalError + m_kd * m_velocityError;
     }
 
-    /** Resets the previous error and the integral term. */
+    /**
+     * Resets the previous error and the integral term.
+     */
     public void reset() {
         m_positionError = 0;
         m_prevError = 0;

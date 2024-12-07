@@ -9,8 +9,8 @@ public final class MathUtil {
      * Returns value clamped between low and high boundaries.
      *
      * @param value Value to clamp.
-     * @param low The lower boundary to which to clamp value.
-     * @param high The higher boundary to which to clamp value.
+     * @param low   The lower boundary to which to clamp value.
+     * @param high  The higher boundary to which to clamp value.
      * @return The clamped value.
      */
     public static int clamp(int value, int low, int high) {
@@ -21,8 +21,8 @@ public final class MathUtil {
      * Returns value clamped between low and high boundaries.
      *
      * @param value Value to clamp.
-     * @param low The lower boundary to which to clamp value.
-     * @param high The higher boundary to which to clamp value.
+     * @param low   The lower boundary to which to clamp value.
+     * @param high  The higher boundary to which to clamp value.
      * @return The clamped value.
      */
     public static double clamp(double value, double low, double high) {
@@ -33,8 +33,8 @@ public final class MathUtil {
      * Returns 0.0 if the given value is within the specified range around zero. The remaining range
      * between the deadband and the maximum magnitude is scaled from 0.0 to the maximum magnitude.
      *
-     * @param value Value to clip.
-     * @param deadband Range around zero.
+     * @param value        Value to clip.
+     * @param deadband     Range around zero.
      * @param maxMagnitude The maximum magnitude of the input. Can be infinite.
      * @return The value after the deadband is applied.
      */
@@ -90,7 +90,7 @@ public final class MathUtil {
      * Returns 0.0 if the given value is within the specified range around zero. The remaining range
      * between the deadband and 1.0 is scaled from 0.0 to 1.0.
      *
-     * @param value Value to clip.
+     * @param value    Value to clip.
      * @param deadband Range around zero.
      * @return The value after the deadband is applied.
      */
@@ -101,7 +101,7 @@ public final class MathUtil {
     /**
      * Returns modulus of input.
      *
-     * @param input Input value to wrap.
+     * @param input        Input value to wrap.
      * @param minimumInput The minimum value expected from the input.
      * @param maximumInput The maximum value expected from the input.
      * @return The wrapped value.
@@ -134,8 +134,8 @@ public final class MathUtil {
      * Perform linear interpolation between two values.
      *
      * @param startValue The value to start at.
-     * @param endValue The value to end at.
-     * @param t How far between the two values to interpolate. This is clamped to [0, 1].
+     * @param endValue   The value to end at.
+     * @param t          How far between the two values to interpolate. This is clamped to [0, 1].
      * @return The interpolated value.
      */
     public static double interpolate(double startValue, double endValue, double t) {
@@ -145,8 +145,8 @@ public final class MathUtil {
     /**
      * Checks if the given value matches an expected value within a certain tolerance.
      *
-     * @param expected The expected value
-     * @param actual The actual value
+     * @param expected  The expected value
+     * @param actual    The actual value
      * @param tolerance The allowed difference between the actual and the expected value
      * @return Whether or not the actual value is within the allowed tolerance
      */
@@ -167,11 +167,11 @@ public final class MathUtil {
      * same as 0) and 2 is 2 away from 0, adding up to an error of 3 degrees, which is within the
      * given tolerance of 5.
      *
-     * @param expected The expected value
-     * @param actual The actual value
+     * @param expected  The expected value
+     * @param actual    The actual value
      * @param tolerance The allowed difference between the actual and the expected value
-     * @param min Smallest value before wrapping around to the largest value
-     * @param max Largest value before wrapping around to the smallest value
+     * @param min       Smallest value before wrapping around to the largest value
+     * @param max       Largest value before wrapping around to the smallest value
      * @return Whether or not the actual value is within the allowed tolerance
      */
     public static boolean isNear(

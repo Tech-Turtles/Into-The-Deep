@@ -21,13 +21,6 @@ public class ArmTuner extends RobotHardware {
     public static boolean verbose = false;
     public static TuningMode tuningMode = TuningMode.OFF;
 
-    public enum TuningMode {
-        OFF,          // No tuning or adjustments
-        FEEDFORWARD,  // Apply feedforward adjustments only
-        PID,          // Apply PID adjustments only
-        BOTH          // Apply both feedforward and PID adjustments
-    }
-
     @Override
     public void loop() {
         super.loop();
@@ -92,7 +85,7 @@ public class ArmTuner extends RobotHardware {
 
         // Manual slide controls
         if (controller1.right_trigger > 0.2) {
-            if (!controller1.circle() && Math.abs( slideMotorRight.getCurrentPosition()) > getExtensionLimitTicks()) {
+            if (!controller1.circle() && Math.abs(slideMotorRight.getCurrentPosition()) > getExtensionLimitTicks()) {
                 setSlidePower(0);
             } else {
                 setSlidePower(controller1.right_trigger * maxSlideSpeed);
@@ -102,5 +95,12 @@ public class ArmTuner extends RobotHardware {
         } else {
             setSlidePower(0);
         }
+    }
+
+    public enum TuningMode {
+        OFF,          // No tuning or adjustments
+        FEEDFORWARD,  // Apply feedforward adjustments only
+        PID,          // Apply PID adjustments only
+        BOTH          // Apply both feedforward and PID adjustments
     }
 }

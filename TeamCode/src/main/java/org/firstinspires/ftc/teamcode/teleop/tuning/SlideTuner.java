@@ -31,7 +31,7 @@ import org.firstinspires.ftc.teamcode.RobotHardware;
  * It allows tuning of feedforward and PID parameters for precise control.
  */
 @Config
-@TeleOp (group = "B")
+@TeleOp(group = "B")
 public class SlideTuner extends RobotHardware {
     public static double maxSlideSpeed = 1.0;
     /**
@@ -45,13 +45,6 @@ public class SlideTuner extends RobotHardware {
     public static boolean verbose = false;
     public static boolean enableArm = true;
     public static TuningMode tuningMode = TuningMode.OFF;
-
-    public enum TuningMode {
-        OFF,          // No tuning or adjustments
-        FEEDFORWARD,  // Apply feedforward adjustments only
-        PID,          // Apply PID adjustments only
-        BOTH          // Apply both feedforward and PID adjustments
-    }
 
     @Override
     public void loop() {
@@ -78,17 +71,17 @@ public class SlideTuner extends RobotHardware {
             armSetpoint = ARM_HIGH_CHAMBER_END_POSITION;
         }
 
-        if (controller2.triangle()){
+        if (controller2.triangle()) {
             slideSetpoint = HIGH_SPEC_EXT_SLIDE;
             armSetpoint = ARM_HIGH_SPEC_PIVOT_ANGLE;
         }
 
-        if (controller2.cross()){
+        if (controller2.cross()) {
             slideSetpoint = HIGH_SAMPLE_EXT_SLIDE;
             armSetpoint = ARM_HIGH_SAMPLE_PIVOT_ANGLE;
         }
 
-        if (controller2.square()){
+        if (controller2.square()) {
             slideSetpoint = LOW_SAMPLE_EXT_SLIDE;
             armSetpoint = ARM_LOW_SAMPLE_PIVOT_ANGLE;
         }
@@ -164,7 +157,7 @@ public class SlideTuner extends RobotHardware {
         }
 
         // Display detailed slide feedforward and position data for tuning
-        if(verbose) {
+        if (verbose) {
             displayData("Slide Feedforward Difference", slideFeedforwardDifference);
             displayData("Slide Ks", slideKs);
         }
@@ -188,10 +181,17 @@ public class SlideTuner extends RobotHardware {
             setSlidePower(controller2.right_trigger * maxSlideSpeed - slideFeedforward);
         } else if (controller2.left_trigger > 0.2) {
             setSlidePower(controller2.left_trigger * -maxSlideSpeed - slideFeedforward);
-        } else if (controller2.triangle() || controller2.square() || controller2.cross() ){
+        } else if (controller2.triangle() || controller2.square() || controller2.cross()) {
             setSlidePower(-(slidePID + slideFeedforward));
         } else {
             setSlidePower(0);
         }
+    }
+
+    public enum TuningMode {
+        OFF,          // No tuning or adjustments
+        FEEDFORWARD,  // Apply feedforward adjustments only
+        PID,          // Apply PID adjustments only
+        BOTH          // Apply both feedforward and PID adjustments
     }
 }

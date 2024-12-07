@@ -19,14 +19,12 @@ import org.firstinspires.ftc.teamcode.RobotHardware;
 @Config
 public class Manual extends RobotHardware {
     public static boolean colorSensorStop = true;
-    // Max speed in slow mode set to 40%
-    private final double slowModeMultiplier = 0.4;
     public static double maxIntakeSpeed = 1.0;
     public static double maxSlideSpeed = 1.0;
     public static double maxArmSpeed = 1.0;
-
     public static double armSetpoint = 0;
-
+    // Max speed in slow mode set to 40%
+    private final double slowModeMultiplier = 0.4;
     // Flag to control whether slow mode is on or not
     private boolean slowModeEnabled = false;
     private boolean intakeOn;
@@ -42,7 +40,7 @@ public class Manual extends RobotHardware {
     public void loop() {
         super.loop();
 
-        if (controller1.rightBumper()){
+        if (controller1.rightBumper()) {
             if (!colorSensorStop || intakeSensor.getDistance(DistanceUnit.INCH) > COLOR_SENSOR_STOP_DISTANCE) {
                 intakeLeft.setPower(maxIntakeSpeed);
                 intakeRight.setPower(maxIntakeSpeed);
@@ -67,14 +65,12 @@ public class Manual extends RobotHardware {
 
         if (controller1.right_trigger > 0.2) {
             if (!controller1.circle() &&
-                    Math.abs( slideMotorRight.getCurrentPosition()) > getExtensionLimitTicks()) {
+                    Math.abs(slideMotorRight.getCurrentPosition()) > getExtensionLimitTicks()) {
                 slideMotorOut.setPower(0);
                 slideMotorLeft.setPower(0);
                 slideMotorRight.setPower(0);
-            }
-            else if (controller1.triangle() && (
-                    Math.abs( slideMotorRight.getCurrentPosition()) > getExtensionLimitTicks()))
-            {
+            } else if (controller1.triangle() && (
+                    Math.abs(slideMotorRight.getCurrentPosition()) > getExtensionLimitTicks())) {
                 slideMotorOut.setPower(0);
                 slideMotorLeft.setPower(0);
                 slideMotorRight.setPower(0);
@@ -85,8 +81,7 @@ public class Manual extends RobotHardware {
             }
         } else if (controller1.left_trigger > 0.2) {
 
-            if (controller1.triangle() && (Math.abs( slideMotorRight.getCurrentPosition()) < SPECIMEN_LIMIT_TICKS + RETRACT_FUDGE_LIMIT_TICKS))
-            {
+            if (controller1.triangle() && (Math.abs(slideMotorRight.getCurrentPosition()) < SPECIMEN_LIMIT_TICKS + RETRACT_FUDGE_LIMIT_TICKS)) {
                 slideMotorOut.setPower(0);
                 slideMotorLeft.setPower(0);
                 slideMotorRight.setPower(0);
@@ -102,39 +97,31 @@ public class Manual extends RobotHardware {
         }
 
         if (controller1.dpadUp()) {
-           if  (armPitMotor.getCurrentPosition() > ARM_UPPER_LIMIT)
-           {
-               armPitMotor.setPower(0);
-           }
-            else
+            if (armPitMotor.getCurrentPosition() > ARM_UPPER_LIMIT) {
+                armPitMotor.setPower(0);
+            } else
                 armPitMotor.setPower(maxArmSpeed);
         } else if (controller1.dpadDown()) {
-            if  (armPitMotor.getCurrentPosition() < ARM_LOWER_LIMIT)
-            {
+            if (armPitMotor.getCurrentPosition() < ARM_LOWER_LIMIT) {
                 armPitMotor.setPower(0);
-            }
-            else
+            } else
                 armPitMotor.setPower(-1.0 * maxArmSpeed);
         } else if (controller1.dpadRight()) {
-            if  (armPitMotor.getCurrentPosition() < ARM_LOWER_LIMIT)
-            {
+            if (armPitMotor.getCurrentPosition() < ARM_LOWER_LIMIT) {
                 armPitMotor.setPower(0);
-            }
-            else
+            } else
                 armPitMotor.setPower(-1.0 * maxArmSpeed / 2.0);
         } else if (controller1.dpadLeft()) {
-            if  (armPitMotor.getCurrentPosition() > ARM_UPPER_LIMIT)
-            {
+            if (armPitMotor.getCurrentPosition() > ARM_UPPER_LIMIT) {
                 armPitMotor.setPower(0);
-            }
-            else
-                armPitMotor.setPower( maxArmSpeed / 2.0);
+            } else
+                armPitMotor.setPower(maxArmSpeed / 2.0);
         } else {
             armPitMotor.setPower(0.0);
         }
 
         // Reset gyro angle if triangle is pressed
-        if (controller1.triangleOnce()){
+        if (controller1.triangleOnce()) {
             imu.resetYaw();
         }
 
