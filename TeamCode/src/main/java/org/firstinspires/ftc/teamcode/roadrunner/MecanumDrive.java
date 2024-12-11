@@ -54,6 +54,7 @@ import org.firstinspires.ftc.teamcode.roadrunner.messages.DriveCommandMessage;
 import org.firstinspires.ftc.teamcode.roadrunner.messages.MecanumCommandMessage;
 import org.firstinspires.ftc.teamcode.roadrunner.messages.MecanumLocalizerInputsMessage;
 import org.firstinspires.ftc.teamcode.roadrunner.messages.PoseMessage;
+import static org.firstinspires.ftc.teamcode.Constants.AUTO_DRIVEBASE_ACCEL_MULT;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -206,8 +207,8 @@ public final class MecanumDrive {
         public double maxProfileAccel = 30;
 
         // turn profile parameters (in radians)
-        public double maxAngVel = Math.PI; // shared with path
-        public double maxAngAccel = Math.PI;
+        public double maxAngVel = Math.PI ; // shared with path
+        public double maxAngAccel = Math.PI ;
 
         // path controller gains
         public double axialGain = 1.5;

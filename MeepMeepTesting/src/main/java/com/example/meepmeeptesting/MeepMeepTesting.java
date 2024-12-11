@@ -68,13 +68,13 @@ public class MeepMeepTesting {
                         .splineToConstantHeading(new Vector2d(59-16, -50), Math.toRadians(90))
                         .splineToLinearHeading(new Pose2d(0, -40-robotHalfW, Math.toRadians(90.0)), Math.toRadians(180))
                         .setTangent(Math.toRadians(90))
-                        .splineToConstantHeading(new Vector2d(0, -24-robotHalfW), Math.toRadians(90));
+                        .splineToConstantHeading(new Vector2d(0 + 6, -24-robotHalfW), Math.toRadians(90));
 
         TrajectoryActionBuilder placeSpecimenToWall =
                 wallToPlaceSpecimen.endTrajectory().fresh()
                         .setTangent(Math.toRadians(-90))
                         .splineToConstantHeading(new Vector2d(0, -30-robotHalfW), Math.toRadians(-90.0))
-                        .splineToLinearHeading(new Pose2d(59-16, -55, Math.toRadians(-90.0)), Math.toRadians(0.0));
+                        .splineToLinearHeading(new Pose2d(59-16 , -55, Math.toRadians(-90.0)), Math.toRadians(0.0));
 
         TrajectoryActionBuilder wallToActualWall =
                 placeSpecimenToWall.endTrajectory().fresh()

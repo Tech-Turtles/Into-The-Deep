@@ -7,6 +7,7 @@ import static org.firstinspires.ftc.teamcode.Constants.SLIDE_D;
 import static org.firstinspires.ftc.teamcode.Constants.SLIDE_I;
 import static org.firstinspires.ftc.teamcode.Constants.SLIDE_P;
 import static org.firstinspires.ftc.teamcode.Constants.robotHalfW;
+import static org.firstinspires.ftc.teamcode.Constants.*;
 
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.roadrunner.Action;
@@ -35,7 +36,7 @@ public class SpecimenAuto extends RobotHardware {
     private double armSetpoint = 0;
     private double slideSetpoint = 0;
     private boolean shouldRun;
-    public static double autoLoopTime = 0.035;
+    public static double autoLoopTime = 0.042;
 
     private static double previousTime = 0;
 
@@ -43,8 +44,8 @@ public class SpecimenAuto extends RobotHardware {
     public void init() {
         super.init();
 
-        armController = new PIDController(ARM_P, ARM_I, ARM_D, autoLoopTime);
-        slideController = new PIDController(SLIDE_P, SLIDE_I, SLIDE_D, autoLoopTime);
+        armController = new PIDController(ARM_P  +AUTO_ARM_P_FUDGE_FACTOR, ARM_I + AUTO_ARM_I_FUDGE_FACTOR, ARM_D + AUTO_ARM_D_FUDGE_FACTOR, autoLoopTime);
+        slideController = new PIDController(SLIDE_P +AUTO_SLIDE_P_FUDGE_FACTOR, SLIDE_I + AUTO_SLIDE_I_FUDGE_FACTOR, SLIDE_D + AUTO_SLIDE_D_FUDGE_FACTOR, autoLoopTime);
 
         drive = new MecanumDrive(hardwareMap, new Pose2d(8.75, (-72 + robotHalfW), Math.toRadians(90.0)));
 
@@ -90,7 +91,7 @@ public class SpecimenAuto extends RobotHardware {
                         .splineToConstantHeading(new Vector2d(59-16, -50), Math.toRadians(90))
                         .splineToLinearHeading(new Pose2d(0, -40-robotHalfW, Math.toRadians(90.0)), Math.toRadians(180))
                         .setTangent(Math.toRadians(90))
-                        .splineToConstantHeading(new Vector2d(0, -24-robotHalfW), Math.toRadians(90));
+                        .splineToConstantHeading(new Vector2d(0+6, -24-robotHalfW), Math.toRadians(90));
 
         TrajectoryActionBuilder placeSpecimenToWall =
                 wallToPlaceSpecimen.endTrajectory().fresh()
@@ -135,6 +136,7 @@ public class SpecimenAuto extends RobotHardware {
                 wallIntake.build(), //drive forward to intake
                 new InstantAction(() -> setIntakePower(1.0)),
                 actualWallIntake.build(),
+                new SleepAction(0.5),
                 new ParallelAction( // Drive to go place the specimen while doing stuff with the arm
                         wallToPlaceSpecimen.build(), // Start driving to get ready to place
                         new SequentialAction( // Get the arm ready to place while driving
@@ -143,8 +145,11 @@ public class SpecimenAuto extends RobotHardware {
                                 }),
                                 new SleepAction(0.1),
                                 new InstantAction(() -> setIntakePower(0.0)),
+                                new InstantAction(() -> setIntakePower(-1.0)),
+                                new SleepAction(0.1),
+                                new InstantAction(() -> setIntakePower(0.0)),
                                 new SleepAction(1.5),
-                                new InstantAction(() -> slideSetpoint = Constants.HIGH_SPEC_EXT_SLIDE)
+                                new InstantAction(() -> slideSetpoint = Constants.HIGH_SPEC_EXT_SLIDE + 30)
                         )
                 ),
                 new InstantAction(() -> // places spec

@@ -19,8 +19,8 @@ public final class Constants {
     public static double SLIDE_FEEDFORWARD_BASE = 0.4;
     public static double SLIDE_FEEDFORWARD_MAX = 0.58;
     public static double SLIDE_EXTENSION_LIMIT_TICKS = -1223;
-    public static double HIGH_SPEC_EXT_SLIDE = -364;
-    public static double HIGH_SPEC_PLACE_EXT = -200;
+    public static double HIGH_SPEC_EXT_SLIDE = -400;
+    //public static double HIGH_SPEC_PLACE_EXT = -200;
     public static double HIGH_SAMPLE_EXT_SLIDE = SLIDE_EXTENSION_LIMIT_TICKS;
     public static double LOW_SAMPLE_EXT_SLIDE = -525;
     public static double SPECIMEN_LIMIT_TICKS = 364;
@@ -36,7 +36,7 @@ public final class Constants {
     public static double ARM_HIGH_SPEC_PIVOT_ANGLE = 800;
     public static double ARM_HIGH_SAMPLE_PIVOT_ANGLE = 400;
     public static double ARM_LOW_SAMPLE_PIVOT_ANGLE = 350;
-    public static double ARM_HIGH_SPEC_PLACE_PIVOT_ANGLE = 460;
+    public static double ARM_HIGH_SPEC_PLACE_PIVOT_ANGLE = 420;
     public static double ARM_BUCKET_SAMPLE_ANGLE = -500;
     public static double ARM_VERTICAL_POSITION = 700;
     public static double ARM_HORIZONTAL_POSITION = -1500;
@@ -55,6 +55,13 @@ public final class Constants {
     public static double ARM_P = 0.008;
     public static double ARM_I = 0.02;
     public static double ARM_D = 0.00006;
+    public static double AUTO_ARM_P_FUDGE_FACTOR = -0.004;
+    public static double AUTO_ARM_I_FUDGE_FACTOR = 0.00;
+    public static double AUTO_ARM_D_FUDGE_FACTOR = 0.0002;
+    public static double AUTO_SLIDE_P_FUDGE_FACTOR = 0.00;
+    public static double AUTO_SLIDE_I_FUDGE_FACTOR = 0.002;
+    public static double AUTO_SLIDE_D_FUDGE_FACTOR = 0.00016;
+    public static double AUTO_DRIVEBASE_ACCEL_MULT = 1.25;
     // ------------------------------
     // Drive Controls
     // ------------------------------
