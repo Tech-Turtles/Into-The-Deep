@@ -149,7 +149,7 @@ public class SpecimenAuto extends RobotHardware {
                                 new SleepAction(0.1),
                                 new InstantAction(() -> setIntakePower(0.0)),
                                 new SleepAction(1.5),
-                                new InstantAction(() -> slideSetpoint = Constants.HIGH_SPEC_EXT_SLIDE + 30)
+                                new InstantAction(() -> slideSetpoint = Constants.HIGH_SPEC_EXT_SLIDE - 40)
                         )
                 ),
                 new InstantAction(() -> // places spec
