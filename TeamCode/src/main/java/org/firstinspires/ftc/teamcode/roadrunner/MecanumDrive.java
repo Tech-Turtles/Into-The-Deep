@@ -1,5 +1,11 @@
 package org.firstinspires.ftc.teamcode.roadrunner;
 
+import static org.firstinspires.ftc.teamcode.Constants.AUTO_maxAngVel_Mult;
+import static org.firstinspires.ftc.teamcode.Constants.AUTO_maxProfileAccel;
+import static org.firstinspires.ftc.teamcode.Constants.AUTO_maxWheelVel;
+import static org.firstinspires.ftc.teamcode.Constants.AUTO_minProfileAccel;
+import static org.firstinspires.ftc.teamcode.Constants.maxAngAccel_Mult;
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.canvas.Canvas;
@@ -202,13 +208,13 @@ public final class MecanumDrive {
         public double kA = 0;
 
         // path profile parameters (in inches)
-        public double maxWheelVel = 30;
-        public double minProfileAccel = -30;
-        public double maxProfileAccel = 30;
+        public double maxWheelVel = AUTO_maxWheelVel;
+        public double minProfileAccel = AUTO_minProfileAccel;
+        public double maxProfileAccel = AUTO_maxProfileAccel;
 
         // turn profile parameters (in radians)
-        public double maxAngVel = Math.PI ; // shared with path
-        public double maxAngAccel = Math.PI ;
+        public double maxAngVel = Math.PI * AUTO_maxAngVel_Mult; // shared with path
+        public double maxAngAccel = Math.PI * maxAngAccel_Mult ;
 
         // path controller gains
         public double axialGain = 1.5;

@@ -44,6 +44,12 @@ public class SpecimenAuto extends RobotHardware {
     public void init() {
         super.init();
 
+         AUTO_maxWheelVel = 30;
+         AUTO_minProfileAccel = -30;
+         AUTO_maxProfileAccel = 30;
+         AUTO_maxAngVel_Mult = 1;
+         maxAngAccel_Mult = 1;
+
         armController = new PIDController(ARM_P  +AUTO_ARM_P_FUDGE_FACTOR, ARM_I + AUTO_ARM_I_FUDGE_FACTOR, ARM_D + AUTO_ARM_D_FUDGE_FACTOR, autoLoopTime);
         slideController = new PIDController(SLIDE_P +AUTO_SLIDE_P_FUDGE_FACTOR, SLIDE_I + AUTO_SLIDE_I_FUDGE_FACTOR, SLIDE_D + AUTO_SLIDE_D_FUDGE_FACTOR, autoLoopTime);
 

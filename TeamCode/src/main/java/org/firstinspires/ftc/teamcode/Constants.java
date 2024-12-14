@@ -40,7 +40,7 @@ public final class Constants {
     public static double ARM_BUCKET_SAMPLE_ANGLE = -800;
     public static double ARM_VERTICAL_POSITION = 700;
     public static double ARM_HORIZONTAL_POSITION = -1500;
-    public static double ARM_HIGH_CHAMBER_END_POSITION = 100;
+    public static double ARM_HIGH_CHAMBER_END_POSITION = 50;
     public static double ARM_WALL_SPEC_INTAKE_ANGLE = -600;
     public static double ARM_FEEDFORWARD = 0.145;
     public static double ARM_FEEDFORWARD_MAX = 0.3;
@@ -61,7 +61,12 @@ public final class Constants {
     public static double AUTO_SLIDE_P_FUDGE_FACTOR = 0.00;
     public static double AUTO_SLIDE_I_FUDGE_FACTOR = 0.002;
     public static double AUTO_SLIDE_D_FUDGE_FACTOR = 0.00024;
-  //  public static double AUTO_DRIVEBASE_ACCEL_MULT = 1.25;
+    public static double AUTO_maxWheelVel = 30;
+    public static double AUTO_minProfileAccel = -30;
+    public static double AUTO_maxProfileAccel = 30;
+    public static double AUTO_maxAngVel_Mult = 1;
+    public static double maxAngAccel_Mult = 1;
+
     // ------------------------------
     // Drive Controls
     // ------------------------------
