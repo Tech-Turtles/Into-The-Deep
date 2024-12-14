@@ -22,7 +22,7 @@ public class MeepMeepTesting {
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(50, 50, Math.toRadians(270), Math.toRadians(270), 11.5)
+                .setConstraints(40, 40, Math.toRadians(270), Math.toRadians(270), 11.5)
                 .setDimensions(robotW, robotH)
                 .setColorScheme(new ColorSchemeBlueDark())
                 .build();
@@ -38,14 +38,14 @@ public class MeepMeepTesting {
                         .splineToConstantHeading(new Vector2d(35, -34), Math.toRadians(30)) // intermediate path to not hit the truss
                         .setTangent(Math.toRadians(90))
                         .splineToConstantHeading(new Vector2d(35, -22), Math.toRadians(90))
-                        .splineToConstantHeading(new Vector2d(46+2, -18), Math.toRadians(0))
+                        .splineToConstantHeading(new Vector2d(46+2, -18+3+3), Math.toRadians(0))
                         .setTangent(Math.toRadians(-90))
-                        .splineToConstantHeading(new Vector2d(46+2, -60 + 8), Math.toRadians(-90))
-                        .setTangent(Math.toRadians(90))
-                        .splineToConstantHeading(new Vector2d(50+3, -14), Math.toRadians(60))
-                        .splineToConstantHeading(new Vector2d(59, -20), Math.toRadians(-30))
+                        .splineToConstantHeading(new Vector2d(46+2, -60 + 8+5 + 5), Math.toRadians(-90))
+                        .splineToConstantHeading(new Vector2d(46+2, -20+2+6+5), Math.toRadians(90))
+                        .setTangent(Math.toRadians(0))
+                        .splineToConstantHeading(new Vector2d(58, -20+2+1+5), Math.toRadians(270))
                         .setTangent(Math.toRadians(-90))
-                        .splineToConstantHeading(new Vector2d(59, -60 + 8), Math.toRadians(-90));
+                        .splineToConstantHeading(new Vector2d(58, -60 + 8+5 +5 ), Math.toRadians(-90));
 
         TrajectoryActionBuilder turnAroundAfterPush =
                 chamberToSpikeMark.endTrajectory().fresh()
@@ -56,7 +56,7 @@ public class MeepMeepTesting {
         TrajectoryActionBuilder wallIntake =
                 turnAroundAfterPush.endTrajectory().fresh()
                         .setTangent(Math.toRadians(-90))
-                        .splineToLinearHeading(new Pose2d(59-16, -55+1, Math.toRadians(270)), Math.toRadians(-90));
+                        .splineToLinearHeading(new Pose2d(59-16, -55+1 + 10, Math.toRadians(270)), Math.toRadians(-90));
 
         TrajectoryActionBuilder actualWallIntake =
                 wallIntake.endTrajectory().fresh()
@@ -66,7 +66,8 @@ public class MeepMeepTesting {
                 actualWallIntake.endTrajectory().fresh()
                         .setTangent(Math.toRadians(90))
                         .splineToConstantHeading(new Vector2d(59-16, -50), Math.toRadians(90))
-                        .splineToLinearHeading(new Pose2d(0, -40-robotHalfW, Math.toRadians(90.0)), Math.toRadians(180))
+                        .turn( Math.toRadians(-180))
+                        .splineToConstantHeading(new Vector2d(0+6, -40-robotHalfW), Math.toRadians(180))
                         .setTangent(Math.toRadians(90))
                         .splineToConstantHeading(new Vector2d(0 + 6, -24-robotHalfW), Math.toRadians(90));
 
@@ -74,12 +75,21 @@ public class MeepMeepTesting {
                 wallToPlaceSpecimen.endTrajectory().fresh()
                         .setTangent(Math.toRadians(-90))
                         .splineToConstantHeading(new Vector2d(0, -30-robotHalfW), Math.toRadians(-90.0))
-                        .splineToLinearHeading(new Pose2d(59-16 , -55, Math.toRadians(-90.0)), Math.toRadians(0.0));
+                        .turn( Math.toRadians(-180));
 
         TrajectoryActionBuilder wallToActualWall =
                 placeSpecimenToWall.endTrajectory().fresh()
                         .setTangent(Math.toRadians(-90.0))
                         .splineToLinearHeading(new Pose2d(59-16, -55+1-4, Math.toRadians(270)), Math.toRadians(-90));
+
+        TrajectoryActionBuilder wallToPlaceSpecimenSecond =
+                actualWallIntake.endTrajectory().fresh()
+                        .setTangent(Math.toRadians(90))
+                        .splineToConstantHeading(new Vector2d(59-16, -50), Math.toRadians(90))
+                        .turn( Math.toRadians(-180))
+                        .splineToConstantHeading(new Vector2d(0+6, -40-robotHalfW), Math.toRadians(180))
+                        .setTangent(Math.toRadians(90))
+                        .splineToConstantHeading(new Vector2d(0 + 3, -24-robotHalfW), Math.toRadians(90));
 
         myBot.runAction(
                 new SequentialAction(
@@ -91,7 +101,7 @@ public class MeepMeepTesting {
                         wallToPlaceSpecimen.build(),
                         placeSpecimenToWall.build(),
                         wallToActualWall.build(),
-                        wallToPlaceSpecimen.build()
+                        wallToPlaceSpecimenSecond.build()
 //                        ,
 //                        placeSpecimenToWall.build(),
 //                        wallToActualWall.build(),

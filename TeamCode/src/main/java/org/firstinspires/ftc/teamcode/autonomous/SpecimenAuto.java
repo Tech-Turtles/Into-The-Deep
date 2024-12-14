@@ -61,14 +61,14 @@ public class SpecimenAuto extends RobotHardware {
                         .splineToConstantHeading(new Vector2d(35, -34), Math.toRadians(30)) // intermediate path to not hit the truss
                         .setTangent(Math.toRadians(90))
                         .splineToConstantHeading(new Vector2d(35, -22), Math.toRadians(90))
-                        .splineToConstantHeading(new Vector2d(46+2, -18), Math.toRadians(0))
+                        .splineToConstantHeading(new Vector2d(46+2, -18+3+3), Math.toRadians(0))
                         .setTangent(Math.toRadians(-90))
-                        .splineToConstantHeading(new Vector2d(46+2, -60 + 8), Math.toRadians(-90))
-                        .setTangent(Math.toRadians(90))
-                        .splineToConstantHeading(new Vector2d(50+3, -14), Math.toRadians(60))
-                        .splineToConstantHeading(new Vector2d(59, -20), Math.toRadians(-30))
+                        .splineToConstantHeading(new Vector2d(46+2, -60 + 8+5 + 5), Math.toRadians(-90))
+                        .splineToConstantHeading(new Vector2d(46+2, -20+2+6+5), Math.toRadians(90))
+                        .setTangent(Math.toRadians(0))
+                        .splineToConstantHeading(new Vector2d(58, -20+2+1+5), Math.toRadians(270))
                         .setTangent(Math.toRadians(-90))
-                        .splineToConstantHeading(new Vector2d(59, -60 + 8), Math.toRadians(-90));
+                        .splineToConstantHeading(new Vector2d(58, -60 + 8+5 +5 ), Math.toRadians(-90));
 
         TrajectoryActionBuilder turnAroundAfterPush =
                 chamberToSpikeMark.endTrajectory().fresh()
@@ -79,7 +79,7 @@ public class SpecimenAuto extends RobotHardware {
         TrajectoryActionBuilder wallIntake =
                 turnAroundAfterPush.endTrajectory().fresh()
                         .setTangent(Math.toRadians(-90))
-                        .splineToLinearHeading(new Pose2d(59-16, -55+1, Math.toRadians(270)), Math.toRadians(-90));
+                        .splineToLinearHeading(new Pose2d(59-16, -55+1 + 10, Math.toRadians(270)), Math.toRadians(-90));
 
         TrajectoryActionBuilder actualWallIntake =
                 wallIntake.endTrajectory().fresh()
@@ -89,28 +89,37 @@ public class SpecimenAuto extends RobotHardware {
                 actualWallIntake.endTrajectory().fresh()
                         .setTangent(Math.toRadians(90))
                         .splineToConstantHeading(new Vector2d(59-16, -50), Math.toRadians(90))
-                        .splineToLinearHeading(new Pose2d(0, -40-robotHalfW, Math.toRadians(90.0)), Math.toRadians(180))
+                        .turn( Math.toRadians(-180))
+                        .splineToConstantHeading(new Vector2d(0+6, -40-robotHalfW), Math.toRadians(180))
                         .setTangent(Math.toRadians(90))
-                        .splineToConstantHeading(new Vector2d(0+6, -24-robotHalfW), Math.toRadians(90));
+                        .splineToConstantHeading(new Vector2d(0 + 6, -24-robotHalfW), Math.toRadians(90));
 
         TrajectoryActionBuilder placeSpecimenToWall =
                 wallToPlaceSpecimen.endTrajectory().fresh()
                         .setTangent(Math.toRadians(-90))
                         .splineToConstantHeading(new Vector2d(0, -30-robotHalfW), Math.toRadians(-90.0))
-                        .splineToLinearHeading(new Pose2d(59-16, -55, Math.toRadians(-90.0)), Math.toRadians(0.0));
+                        .turn( Math.toRadians(-180));
 
         TrajectoryActionBuilder wallToActualWall =
                 placeSpecimenToWall.endTrajectory().fresh()
                         .setTangent(Math.toRadians(-90.0))
                         .splineToLinearHeading(new Pose2d(59-16, -55+1-4, Math.toRadians(270)), Math.toRadians(-90));
 
+        TrajectoryActionBuilder wallToPlaceSpecimenSecond =
+                actualWallIntake.endTrajectory().fresh()
+                        .setTangent(Math.toRadians(90))
+                        .splineToConstantHeading(new Vector2d(59-16, -50), Math.toRadians(90))
+                        .turn( Math.toRadians(-180))
+                        .splineToConstantHeading(new Vector2d(0+6, -40-robotHalfW), Math.toRadians(180))
+                        .setTangent(Math.toRadians(90))
+                        .splineToConstantHeading(new Vector2d(0 + 3, -24-robotHalfW), Math.toRadians(90));
 
         autonomous = new SequentialAction(
                 new InstantAction(() -> //does on start, set arm to spec deposit
                 {
                     armSetpoint = Constants.ARM_HIGH_SPEC_PLACE_PIVOT_ANGLE;
                     slideSetpoint = Constants.HIGH_SPEC_EXT_SLIDE;
-                    new SleepAction(0.5);
+                    //new SleepAction(0.5);
                 }),
                 rightStartToSpecimenPlace.build(), //drives to chamber
                 new InstantAction(() -> // places spec
@@ -118,7 +127,7 @@ public class SpecimenAuto extends RobotHardware {
                     armSetpoint = Constants.ARM_HIGH_SPEC_PLACE_PIVOT_ANGLE;
                     slideSetpoint = Constants.SLIDE_SPECIMEN_RETRACT_TICKS; //value inputted, needs to be confirmed
                 }),
-                new SleepAction(0.5),
+                new SleepAction(0.2),
                 new ParallelAction( // Run the intake & start on the next path
                         new SequentialAction(
                                 //outtakes intake to make sure no spec gets stuck in robot
@@ -137,7 +146,7 @@ public class SpecimenAuto extends RobotHardware {
                 wallIntake.build(), //drive forward to intake
                 new InstantAction(() -> setIntakePower(1.0)),
                 actualWallIntake.build(),
-                new SleepAction(0.5),
+                new SleepAction(0.2),
                 new ParallelAction( // Drive to go place the specimen while doing stuff with the arm
                         wallToPlaceSpecimen.build(), // Start driving to get ready to place
                         new SequentialAction( // Get the arm ready to place while driving
@@ -158,7 +167,7 @@ public class SpecimenAuto extends RobotHardware {
                     armSetpoint = Constants.ARM_HIGH_SPEC_PLACE_PIVOT_ANGLE;
                     slideSetpoint = Constants.SLIDE_SPECIMEN_RETRACT_TICKS; //value inputted, needs to be confirmed
                 }),
-                new SleepAction(0.5),
+                new SleepAction(0.2),
                 new ParallelAction(
                         placeSpecimenToWall.build(),
                         new SequentialAction(
@@ -173,7 +182,7 @@ public class SpecimenAuto extends RobotHardware {
                 new InstantAction(() -> setIntakePower(1.0)),
                 wallToActualWall.build(),
                 new ParallelAction( // Drive to go place the specimen while doing stuff with the arm
-                        wallToPlaceSpecimen.build(), // Start driving to get ready to place
+                        wallToPlaceSpecimenSecond.build(), // Start driving to get ready to place
                         new SequentialAction( // Get the arm ready to place while driving
                                 new InstantAction(() -> {
                                     armSetpoint = Constants.ARM_HIGH_SPEC_PLACE_PIVOT_ANGLE;
