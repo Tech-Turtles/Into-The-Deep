@@ -41,7 +41,7 @@ public final class Constants {
     public static double ARM_VERTICAL_POSITION = 700;
     public static double ARM_HORIZONTAL_POSITION = -1500;
     public static double ARM_HIGH_CHAMBER_END_POSITION = 100;
-    public static double ARM_WALL_SPEC_INTAKE_ANGLE = -500;
+    public static double ARM_WALL_SPEC_INTAKE_ANGLE = -600;
     public static double ARM_FEEDFORWARD = 0.145;
     public static double ARM_FEEDFORWARD_MAX = 0.3;
     public static double ARM_ZERO_OFFSET = 1450;

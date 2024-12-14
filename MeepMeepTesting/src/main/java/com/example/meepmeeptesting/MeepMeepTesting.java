@@ -59,16 +59,20 @@ public class MeepMeepTesting {
                         .splineToLinearHeading(new Pose2d(59-16, -55+1, Math.toRadians(270)), Math.toRadians(-90));
 
         TrajectoryActionBuilder actualWallIntake =
-                wallIntake.endTrajectory().fresh()
+                turnAroundAfterPush.endTrajectory().fresh()
+                        .setTangent(Math.toRadians(-90))
                         .splineToLinearHeading(new Pose2d(59-16, -55+1-4, Math.toRadians(270)), Math.toRadians(-90));
 
         TrajectoryActionBuilder wallToPlaceSpecimen =
                 actualWallIntake.endTrajectory().fresh()
                         .setTangent(Math.toRadians(90))
                         .splineToConstantHeading(new Vector2d(59-16, -50), Math.toRadians(90))
-                        .splineToLinearHeading(new Pose2d(0, -40-robotHalfW, Math.toRadians(90.0)), Math.toRadians(180))
+                        .turn(Math.toRadians(180))
+                        .splineToConstantHeading(new Vector2d(0, -40-robotHalfW), Math.toRadians(180))
                         .setTangent(Math.toRadians(90))
                         .splineToConstantHeading(new Vector2d(0 + 6, -24-robotHalfW), Math.toRadians(90));
+
+
 
         TrajectoryActionBuilder placeSpecimenToWall =
                 wallToPlaceSpecimen.endTrajectory().fresh()
@@ -86,7 +90,7 @@ public class MeepMeepTesting {
                         rightStartToSpecimenPlace.build(),
                         chamberToSpikeMark.build(),
                         turnAroundAfterPush.build(),
-                        wallIntake.build(),
+                        //wallIntake.build(),
                         actualWallIntake.build(),
                         wallToPlaceSpecimen.build(),
                         placeSpecimenToWall.build(),
