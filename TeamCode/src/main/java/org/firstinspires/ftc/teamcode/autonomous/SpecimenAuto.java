@@ -57,7 +57,8 @@ public class SpecimenAuto extends RobotHardware {
 
         TrajectoryActionBuilder rightStartToSpecimenPlace =
                 drive.actionBuilder(new Pose2d(10, (-72 + robotHalfW ), Math.toRadians(90))) // added 6in to line up edge of the robot on the left side of the feild tile perforation
-                        .splineTo(new Vector2d(0, (-24 - robotHalfW)), Math.toRadians(90));
+                        .splineTo(new Vector2d(0- 2, (-24 - robotHalfW)), Math.toRadians(90));
+
 
 
 
@@ -67,7 +68,7 @@ public class SpecimenAuto extends RobotHardware {
                         .splineToConstantHeading(new Vector2d(35, -34), Math.toRadians(30)) // intermediate path to not hit the truss
                         .setTangent(Math.toRadians(90))
                         .splineToConstantHeading(new Vector2d(35, -22), Math.toRadians(90))
-                        .splineToConstantHeading(new Vector2d(46+2, -18), Math.toRadians(0))
+                        .splineToConstantHeading(new Vector2d(46+4, -18), Math.toRadians(0))
                         .setTangent(Math.toRadians(-90))
                         .splineToConstantHeading(new Vector2d(46+2, -60 + 8), Math.toRadians(-90))
                         .setTangent(Math.toRadians(90))

@@ -20,6 +20,7 @@ public final class Constants {
     public static double SLIDE_FEEDFORWARD_MAX = 0.58;
     public static double SLIDE_EXTENSION_LIMIT_TICKS = -1223;
     public static double HIGH_SPEC_EXT_SLIDE = -400;
+    public static double HIGH_SPEC_WALL_EXT_SLIDE = -425;
     //public static double HIGH_SPEC_PLACE_EXT = -200;
     public static double HIGH_SAMPLE_EXT_SLIDE = SLIDE_EXTENSION_LIMIT_TICKS;
     public static double LOW_SAMPLE_EXT_SLIDE = -525;
@@ -42,6 +43,8 @@ public final class Constants {
     public static double ARM_HORIZONTAL_POSITION = -1500;
     public static double ARM_HIGH_CHAMBER_END_POSITION = 50;
     public static double ARM_WALL_SPEC_INTAKE_ANGLE = -600;
+
+    public static double TELE_ARM_WALL_SPEC_INTAKE_ANGLE = -600;
     public static double ARM_FEEDFORWARD = 0.145;
     public static double ARM_FEEDFORWARD_MAX = 0.3;
     public static double ARM_ZERO_OFFSET = 1450;
@@ -51,7 +54,6 @@ public final class Constants {
     public static double ARM_FEEDFORWARD_CUTOFF_COEFFICIENT = 0.2;
     public static double ARM_LOWER_LIMIT = -1667;
     public static double ARM_UPPER_LIMIT = 950;
-    public static double ARM_WALL_SPECIMEN_POSITION = 200;
     public static double ARM_P = 0.008;
     public static double ARM_I = 0.02;
     public static double ARM_D = 0.00006;
