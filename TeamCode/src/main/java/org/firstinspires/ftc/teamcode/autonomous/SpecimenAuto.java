@@ -110,6 +110,7 @@ public class SpecimenAuto extends RobotHardware {
                 {
                     armSetpoint = Constants.ARM_HIGH_SPEC_PLACE_PIVOT_ANGLE;
                     slideSetpoint = Constants.HIGH_SPEC_EXT_SLIDE;
+                    new SleepAction(0.5);
                 }),
                 rightStartToSpecimenPlace.build(), //drives to chamber
                 new InstantAction(() -> // places spec
@@ -146,7 +147,7 @@ public class SpecimenAuto extends RobotHardware {
                                 new SleepAction(0.1),
                                 new InstantAction(() -> setIntakePower(0.0)),
                                 new InstantAction(() -> setIntakePower(-1.0)),
-                                new SleepAction(0.1),
+                                new SleepAction(0.15),
                                 new InstantAction(() -> setIntakePower(0.0)),
                                 new SleepAction(1.5),
                                 new InstantAction(() -> slideSetpoint = Constants.HIGH_SPEC_EXT_SLIDE - 40)

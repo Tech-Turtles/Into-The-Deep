@@ -72,7 +72,7 @@ public class MainPID extends RobotHardware {
         }
 
         if (controller2.triangle()) {
-            slideSetpoint = HIGH_SPEC_EXT_SLIDE;
+            slideSetpoint = HIGH_SPEC_EXT_SLIDE + 36;
             armPitTarget = ARM_HIGH_SPEC_PIVOT_ANGLE;
         }
 
