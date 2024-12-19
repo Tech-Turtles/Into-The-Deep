@@ -79,6 +79,19 @@ public final class Constants {
     public static double robotW = 17.8;
     public static double robotH = 16;
     public static double robotHalfW = robotW / 2.0;
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    public static double blue1Angle = 20;
+    public static double blue1ToHPZoneAngle = -120;
+    public static double blue2Angle = 30;
+    public static double blue2ToHPZoneAngle = 30;
+    public static double blue3Angle = 45;
+    public static double blue3ToHPZoneAngle = 45;
+    public static double BLUE_1_TOTAL_EXTENSION = -570;
+    public static double BLUE_1_PARTIAL_EXTENSION = 230;
+    public static double blue2Ext = -500;
+    public static double blue3Ext = -500;
+////////////////////////////////////////////////////////////////////////////////////////////////////
     private Constants() {
         throw new AssertionError("Utility class");
     }

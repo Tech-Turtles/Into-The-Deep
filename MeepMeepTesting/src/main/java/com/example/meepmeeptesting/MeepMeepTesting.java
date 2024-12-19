@@ -17,6 +17,13 @@ public class MeepMeepTesting {
     private static final double robotH = 16;
     private static final double robotHalfW = robotW/2.0;
 
+    public static double blue1Angle = -20;
+    public static double blue1ToHPZoneAngle = -120;
+    public static double blue2Angle = 25;
+    public static double blue2ToHPZoneAngle = blue1ToHPZoneAngle + blue2Angle;
+    public static double blue3Angle = 45;
+    public static double blue3ToHPZoneAngle = 45;
+
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(700);
 
@@ -80,21 +87,59 @@ public class MeepMeepTesting {
                 placeSpecimenToWall.endTrajectory().fresh()
                         .setTangent(Math.toRadians(-90.0))
                         .splineToLinearHeading(new Pose2d(59-16, -55+1-4, Math.toRadians(270)), Math.toRadians(-90));
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        TrajectoryActionBuilder placeToRotatePoint =
+                rightStartToSpecimenPlace.endTrajectory().fresh()
+                        .setTangent(Math.toRadians(360))
+                        .splineToConstantHeading(new Vector2d(40, -45), Math.toRadians(0))
+                        .turn(Math.toRadians(blue1Angle));
+
+        TrajectoryActionBuilder rotatePointBlue1ToHPZone =
+                placeToRotatePoint.endTrajectory().fresh()
+                        .setTangent(Math.toRadians(0))
+                        .turn(Math.toRadians(blue1ToHPZoneAngle));
+
+        TrajectoryActionBuilder blue1ToBlue2 =
+                rotatePointBlue1ToHPZone.endTrajectory().fresh()
+                        .setTangent(Math.toRadians(0))
+                        .turn(Math.toRadians(-(blue1ToHPZoneAngle)-blue2Angle));
+
+        TrajectoryActionBuilder blue2ToHPZone =
+                blue1ToBlue2.endTrajectory().fresh()
+                        .setTangent(Math.toRadians(0))
+                        .turn(Math.toRadians(blue2ToHPZoneAngle));
+
+        TrajectoryActionBuilder blue2ToBlue3 =
+                blue1ToBlue2.endTrajectory().fresh()
+                        .setTangent(Math.toRadians(0))
+                        .turn(Math.toRadians(-(blue2ToHPZoneAngle)-blue3Angle));
+
+//        myBot.runAction(
+//                new SequentialAction(
+//                        rightStartToSpecimenPlace.build(),
+//                        chamberToSpikeMark.build(),
+//                        turnAroundAfterPush.build(),
+//                        //wallIntake.build(),
+//                        actualWallIntake.build(),
+//                        wallToPlaceSpecimen.build(),
+//                        placeSpecimenToWall.build(),
+//                        wallToActualWall.build()
+//                       // wallToPlaceSpecimenThird.build()
+////                        ,
+////                        placeSpecimenToWall.build(),
+////                        wallToActualWall.build(),
+////                        wallToPlaceSpecimen.build()
+//                )
+
         myBot.runAction(
                 new SequentialAction(
                         rightStartToSpecimenPlace.build(),
-                        chamberToSpikeMark.build(),
-                        turnAroundAfterPush.build(),
-                        //wallIntake.build(),
-                        actualWallIntake.build(),
-                        wallToPlaceSpecimen.build(),
-                        placeSpecimenToWall.build(),
-                        wallToActualWall.build()
-                       // wallToPlaceSpecimenThird.build()
-//                        ,
-//                        placeSpecimenToWall.build(),
-//                        wallToActualWall.build(),
-//                        wallToPlaceSpecimen.build()
+                        placeToRotatePoint.build(),
+                        rotatePointBlue1ToHPZone.build(),
+                        blue1ToBlue2.build(),
+                        blue2ToHPZone.build()
                 )
         );
 

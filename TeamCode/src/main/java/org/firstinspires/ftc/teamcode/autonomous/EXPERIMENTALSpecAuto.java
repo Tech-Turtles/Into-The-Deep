@@ -20,7 +20,6 @@ import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.RobotHardware;
@@ -36,7 +35,18 @@ public class EXPERIMENTALSpecAuto extends RobotHardware {
     private double armSetpoint = 0;
     private double slideSetpoint = 0;
     private boolean shouldRun;
-    public static double autoLoopTime = 0.042;
+    public static double AUTO_LOOP_TIME = 0.042;
+    public static boolean SLIDE_PID_ENABLER = true;
+    public static double SLIDE_SET_POWER = 0;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+    public static double BLUE_1_ANGLE = -11.5;
+    public static double blue1ToHPZoneAngle = -120;
+    public static double blue2Angle = 25;
+    public static double blue2ToHPZoneAngle = blue1ToHPZoneAngle + blue2Angle;
+    public static double blue3Angle = 45;
+    public static double blue3ToHPZoneAngle = 45;
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private static double previousTime = 0;
 
@@ -50,8 +60,8 @@ public class EXPERIMENTALSpecAuto extends RobotHardware {
          AUTO_maxAngVel_Mult = 1.5;
          maxAngAccel_Mult = 1.3;
 
-        armController = new PIDController(ARM_P  +AUTO_ARM_P_FUDGE_FACTOR, ARM_I + AUTO_ARM_I_FUDGE_FACTOR, ARM_D + AUTO_ARM_D_FUDGE_FACTOR, autoLoopTime);
-        slideController = new PIDController(SLIDE_P +AUTO_SLIDE_P_FUDGE_FACTOR, SLIDE_I + AUTO_SLIDE_I_FUDGE_FACTOR, SLIDE_D + AUTO_SLIDE_D_FUDGE_FACTOR, autoLoopTime);
+        armController = new PIDController(ARM_P  +AUTO_ARM_P_FUDGE_FACTOR, ARM_I + AUTO_ARM_I_FUDGE_FACTOR, ARM_D + AUTO_ARM_D_FUDGE_FACTOR, AUTO_LOOP_TIME);
+        slideController = new PIDController(SLIDE_P +AUTO_SLIDE_P_FUDGE_FACTOR, SLIDE_I + AUTO_SLIDE_I_FUDGE_FACTOR, SLIDE_D + AUTO_SLIDE_D_FUDGE_FACTOR, AUTO_LOOP_TIME);
 
         drive = new MecanumDrive(hardwareMap, new Pose2d(8.75, (-72 + robotHalfW), Math.toRadians(90.0)));
 
@@ -124,7 +134,35 @@ public class EXPERIMENTALSpecAuto extends RobotHardware {
                         .setTangent(Math.toRadians(-90.0))
                         .splineToLinearHeading(new Pose2d(59-16, -55+1-4, Math.toRadians(270)), Math.toRadians(-90));
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+        TrajectoryActionBuilder placeToRotatePoint =
+                rightStartToSpecimenPlace.endTrajectory().fresh()
+                        .setTangent(Math.toRadians(360))
+                        .splineToConstantHeading(new Vector2d(40, -45), Math.toRadians(0))
+                        .turn(Math.toRadians(BLUE_1_ANGLE));
+
+        TrajectoryActionBuilder rotatePointBlue1ToHPZone =
+                placeToRotatePoint.endTrajectory().fresh()
+                        .setTangent(Math.toRadians(0))
+                        .turn(Math.toRadians(blue1ToHPZoneAngle));
+
+        TrajectoryActionBuilder blue1ToBlue2 =
+                rotatePointBlue1ToHPZone.endTrajectory().fresh()
+                        .setTangent(Math.toRadians(0))
+                        .turn(Math.toRadians(-(blue1ToHPZoneAngle)-blue2Angle));
+
+        TrajectoryActionBuilder blue2ToHPZone =
+                blue1ToBlue2.endTrajectory().fresh()
+                        .setTangent(Math.toRadians(0))
+                        .turn(Math.toRadians(blue2ToHPZoneAngle));
+
+        TrajectoryActionBuilder blue2ToBlue3 =
+                blue1ToBlue2.endTrajectory().fresh()
+                        .setTangent(Math.toRadians(0))
+                        .turn(Math.toRadians(-(blue2ToHPZoneAngle)-blue3Angle));
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         autonomous = new SequentialAction(
                 new InstantAction(() -> //does on start, set arm to spec deposit
@@ -139,7 +177,7 @@ public class EXPERIMENTALSpecAuto extends RobotHardware {
                     armSetpoint = Constants.ARM_HIGH_SPEC_PLACE_PIVOT_ANGLE;
                     slideSetpoint = Constants.SLIDE_SPECIMEN_RETRACT_TICKS; //value inputted, needs to be confirmed
                 }),
-                new SleepAction(0.5),
+                new SleepAction(0.25),
                 new ParallelAction( // Run the intake & start on the next path
                         new SequentialAction(
                                 //outtakes intake to make sure no spec gets stuck in robot
@@ -147,72 +185,103 @@ public class EXPERIMENTALSpecAuto extends RobotHardware {
                                 new SleepAction(0.3),
                                 new InstantAction(() -> setIntakePower(0))
                         ),
-                        chamberToSpikeMark.build() //pushing spline
+                        new SequentialAction( // sets arm horozontal while driving
+                                new SleepAction(1.25),
+                                new InstantAction(() -> armSetpoint = ARM_HORIZONTAL_POSITION)
+                        ),
+                        placeToRotatePoint.build() //drives to the rotate point
                 ),
-                turnAroundAfterPush.build(), // turning around to intake
-                new InstantAction(() -> //set arm to wall intake position
-                {
-                    armSetpoint = Constants.ARM_WALL_SPEC_INTAKE_ANGLE;
-                    slideSetpoint = Constants.SLIDE_WALL_SPEC_INTAKE_EXT;
-                }),
-                //wallIntake.build(), //drive forward to intake
-                new InstantAction(() -> setIntakePower(1.0)),
-                actualWallIntake.build(),
-                new SleepAction(0.2),
-                new ParallelAction( // Drive to go place the specimen while doing stuff with the arm
-                        wallToPlaceSpecimen.build(), // Start driving to get ready to place
-                        new SequentialAction( // Get the arm ready to place while driving
-                                new InstantAction(() -> {
-                                    armSetpoint = Constants.ARM_HIGH_SPEC_PLACE_PIVOT_ANGLE;
-                                }),
-                                new SleepAction(0.1),
-                                new InstantAction(() -> setIntakePower(0.0)),
-                                new InstantAction(() -> setIntakePower(-1.0)),
-                                new SleepAction(0.15),
-                                new InstantAction(() -> setIntakePower(0.0)),
-                                new SleepAction(1.5),
-                                new InstantAction(() -> slideSetpoint = Constants.HIGH_SPEC_EXT_SLIDE - 40)
-                        )
-                ),
-                new InstantAction(() -> // places spec
-                {
-                    armSetpoint = Constants.ARM_HIGH_SPEC_PLACE_PIVOT_ANGLE;
-                    slideSetpoint = Constants.SLIDE_SPECIMEN_RETRACT_TICKS; //value inputted, needs to be confirmed
-                }),
-                new SleepAction(0.2),
-                new ParallelAction(
-                        placeSpecimenToWall.build(),
-                        new SequentialAction(
-                                new SleepAction(1.0),
-                                new InstantAction(() -> //set arm to wall intake position
-                                {
-                                    armSetpoint = Constants.ARM_WALL_SPEC_INTAKE_ANGLE;
-                                    slideSetpoint = Constants.SLIDE_WALL_SPEC_INTAKE_EXT;
-                                })
-                        )
-                ),
-                new InstantAction(() -> setIntakePower(1.0)),
-                wallToActualWall.build(),
-                new ParallelAction( // Drive to go place the specimen while doing stuff with the arm
-                        wallToPlaceSpecimen.build(), // Start driving to get ready to place
-                        new SequentialAction( // Get the arm ready to place while driving
-                                new InstantAction(() -> {
-                                    armSetpoint = Constants.ARM_HIGH_SPEC_PLACE_PIVOT_ANGLE;
-                                }),
-                                new SleepAction(0.1),
-                                new InstantAction(() -> setIntakePower(0.0)),
-                                new SleepAction(1.5),
-                                new InstantAction(() -> slideSetpoint = Constants.HIGH_SPEC_EXT_SLIDE)
-                        )
-                ),
-                new InstantAction(() -> // places spec
-                {
-                    armSetpoint = Constants.ARM_HIGH_SPEC_PLACE_PIVOT_ANGLE;
-                    slideSetpoint = Constants.SLIDE_SPECIMEN_RETRACT_TICKS; //value inputted, needs to be confirmed
-                }),
-                new SleepAction(30) // Stay alive
-        );
 
+                new ParallelAction(
+                    new SequentialAction( // turns on intake and turns back off after set interval of time
+                        new InstantAction(() -> setIntakePower( 1.0)),
+                        new SleepAction(2),
+                        new InstantAction(() -> setIntakePower(0))
+                    ),
+                        new SequentialAction(
+                                new InstantAction(() ->slideSetpoint = BLUE_1_TOTAL_EXTENSION + BLUE_1_PARTIAL_EXTENSION), //extends to the partial point, as to slow extension
+                                new SleepAction(0.5),
+                                new InstantAction(() -> SLIDE_PID_ENABLER = false), // turns slide PID off
+                              new ParallelAction(
+                                        new InstantAction(()-> setSlidePower(-0.5)),
+                                        new InstantAction(() -> SLIDE_SET_POWER = 0.5), //extends slowly becasue i am not a skibidi programer
+                                      new SleepAction(1) // fuck this i hate this so GOD damn much
+                                ),
+                                new InstantAction(() -> {
+                                    if (Math.abs(slideMotorRight.getCurrentPosition()) > Math.abs(BLUE_1_TOTAL_EXTENSION));{
+                                        SLIDE_SET_POWER = 0;
+                                    }
+                                }),
+
+
+
+
+                rotatePointBlue1ToHPZone.build() //turns to deposit sample into human player zone after picking up
+//                turnAroundAfterPush.build(), // turning around to intake
+//                new InstantAction(() -> //set arm to wall intake position
+//                {
+//                    armSetpoint = Constants.ARM_WALL_SPEC_INTAKE_ANGLE;
+//                    slideSetpoint = Constants.SLIDE_WALL_SPEC_INTAKE_EXT;
+//                }),
+//                //wallIntake.build(), //drive forward to intake
+//                new InstantAction(() -> setIntakePower(1.0)),
+//                actualWallIntake.build(),
+//                new SleepAction(0.2),
+//                new ParallelAction( // Drive to go place the specimen while doing stuff with the arm
+//                        wallToPlaceSpecimen.build(), // Start driving to get ready to place
+//                        new SequentialAction( // Get the arm ready to place while driving
+//                                new InstantAction(() -> {
+//                                    armSetpoint = Constants.ARM_HIGH_SPEC_PLACE_PIVOT_ANGLE;
+//                                }),
+//                                new SleepAction(0.1),
+//                                new InstantAction(() -> setIntakePower(0.0)),
+//                                new InstantAction(() -> setIntakePower(-1.0)),
+//                                new SleepAction(0.15),
+//                                new InstantAction(() -> setIntakePower(0.0)),
+//                                new SleepAction(1.5),
+//                                new InstantAction(() -> slideSetpoint = Constants.HIGH_SPEC_EXT_SLIDE - 40)
+//                        )
+//                ),
+//                new InstantAction(() -> // places spec
+//                {
+//                    armSetpoint = Constants.ARM_HIGH_SPEC_PLACE_PIVOT_ANGLE;
+//                    slideSetpoint = Constants.SLIDE_SPECIMEN_RETRACT_TICKS; //value inputted, needs to be confirmed
+//                }),
+//                new SleepAction(0.2),
+//                new ParallelAction(
+//                        placeSpecimenToWall.build(),
+//                        new SequentialAction(
+//                                new SleepAction(1.0),
+//                                new InstantAction(() -> //set arm to wall intake position
+//                                {
+//                                    armSetpoint = Constants.ARM_WALL_SPEC_INTAKE_ANGLE;
+//                                    slideSetpoint = Constants.SLIDE_WALL_SPEC_INTAKE_EXT;
+//                                })
+//                        )
+//                ),
+//                new InstantAction(() -> setIntakePower(1.0)),
+//                wallToActualWall.build(),
+//                new ParallelAction( // Drive to go place the specimen while doing stuff with the arm
+//                        wallToPlaceSpecimen.build(), // Start driving to get ready to place
+//                        new SequentialAction( // Get the arm ready to place while driving
+//                                new InstantAction(() -> {
+//                                    armSetpoint = Constants.ARM_HIGH_SPEC_PLACE_PIVOT_ANGLE;
+//                                }),
+//                                new SleepAction(0.1),
+//                                new InstantAction(() -> setIntakePower(0.0)),
+//                                new SleepAction(1.5),
+//                                new InstantAction(() -> slideSetpoint = Constants.HIGH_SPEC_EXT_SLIDE)
+//                        )
+//                ),
+//                new InstantAction(() -> // places spec
+//                {
+//                    armSetpoint = Constants.ARM_HIGH_SPEC_PLACE_PIVOT_ANGLE;
+//                    slideSetpoint = Constants.SLIDE_SPECIMEN_RETRACT_TICKS; //value inputted, needs to be confirmed
+//                }),
+//                new SleepAction(30) // Stay alive
+                              )
+                )
+                );
         canvas = new Canvas();
         autonomous.preview(canvas);
     }
@@ -243,13 +312,21 @@ public class EXPERIMENTALSpecAuto extends RobotHardware {
 
         displayData("Slide Position", getSlideEncoderPosition());
         displayData("Slide Extension Setpoint", slideSetpoint);
+        displayData("Slide PID ENABLER", SLIDE_PID_ENABLER);
+        displayData("Slide Extension power", slideSetpoint);
 
         if (shouldRun) {
             packet.fieldOverlay().getOperations().addAll(canvas.getOperations());
 
             shouldRun = autonomous.run(packet);
             armPitMotor.setPower(calculateArmPower(armSetpoint));
-            setSlidePower(-(slideController.calculate(getSlideEncoderPosition(), slideSetpoint) + calculateSlideFeedforward()));
+            if (SLIDE_PID_ENABLER){
+                setSlidePower(-(slideController.calculate(getSlideEncoderPosition(), slideSetpoint) + calculateSlideFeedforward()));
+            } else {
+                setSlidePower(SLIDE_SET_POWER);
+            }
+
+
         } else {
             armPitMotor.setPower(0.0);
             setSlidePower(0.0);
