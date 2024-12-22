@@ -9,12 +9,16 @@ import static org.firstinspires.ftc.teamcode.Constants.SLIDE_P;
 import static org.firstinspires.ftc.teamcode.Constants.robotHalfW;
 import static org.firstinspires.ftc.teamcode.Constants.*;
 
+import androidx.annotation.NonNull;
+
 import com.acmerobotics.dashboard.canvas.Canvas;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
+import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
@@ -25,6 +29,8 @@ import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.RobotHardware;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
 import org.firstinspires.ftc.teamcode.utility.PIDController;
+
+import java.util.function.Supplier;
 
 @Autonomous(group = "A")
 public class EXPERIMENTALSpecAuto extends RobotHardware {
@@ -46,6 +52,7 @@ public class EXPERIMENTALSpecAuto extends RobotHardware {
     public static double blue2ToHPZoneAngle = blue1ToHPZoneAngle + blue2Angle;
     public static double blue3Angle = 45;
     public static double blue3ToHPZoneAngle = 45;
+    private double SLIDE_PID_CEILING = 1;
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     private static double previousTime = 0;
@@ -139,28 +146,33 @@ public class EXPERIMENTALSpecAuto extends RobotHardware {
         TrajectoryActionBuilder placeToRotatePoint =
                 rightStartToSpecimenPlace.endTrajectory().fresh()
                         .setTangent(Math.toRadians(360))
-                        .splineToConstantHeading(new Vector2d(40, -45), Math.toRadians(0))
-                        .turn(Math.toRadians(BLUE_1_ANGLE));
+                        .splineToConstantHeading(new Vector2d(40+5+3.5+0.5, -45), Math.toRadians(0));
+
 
         TrajectoryActionBuilder rotatePointBlue1ToHPZone =
                 placeToRotatePoint.endTrajectory().fresh()
                         .setTangent(Math.toRadians(0))
-                        .turn(Math.toRadians(blue1ToHPZoneAngle));
+                        .turn(Math.toRadians(-BLUE_1_DEGREE_TO_HPZONE_REL_VALUE));
 
         TrajectoryActionBuilder blue1ToBlue2 =
                 rotatePointBlue1ToHPZone.endTrajectory().fresh()
                         .setTangent(Math.toRadians(0))
-                        .turn(Math.toRadians(-(blue1ToHPZoneAngle)-blue2Angle));
+                        .turn(Math.toRadians(-BLUE_2_DEGREE_REL_VALUE));
 
         TrajectoryActionBuilder blue2ToHPZone =
                 blue1ToBlue2.endTrajectory().fresh()
                         .setTangent(Math.toRadians(0))
-                        .turn(Math.toRadians(blue2ToHPZoneAngle));
+                        .turn(Math.toRadians(BLUE_2_DEGREE_REL_VALUE));
 
         TrajectoryActionBuilder blue2ToBlue3 =
-                blue1ToBlue2.endTrajectory().fresh()
+                blue2ToHPZone.endTrajectory().fresh()
                         .setTangent(Math.toRadians(0))
-                        .turn(Math.toRadians(-(blue2ToHPZoneAngle)-blue3Angle));
+                        .turn(Math.toRadians(BLUE_3_DEGREE_REL_VALUE));
+
+        TrajectoryActionBuilder blue3ToHPZone =
+                blue2ToBlue3.endTrajectory().fresh()
+                        .setTangent(Math.toRadians(0))
+                        .turn(Math.toRadians(-BLUE_3_DEGREE_REL_VALUE));
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -187,36 +199,98 @@ public class EXPERIMENTALSpecAuto extends RobotHardware {
                         ),
                         new SequentialAction( // sets arm horozontal while driving
                                 new SleepAction(1.25),
-                                new InstantAction(() -> armSetpoint = ARM_HORIZONTAL_POSITION)
+                                new InstantAction(() -> armSetpoint = AUTO_DRIVING_ARM_HOROZONTAL_POSITION)
                         ),
                         placeToRotatePoint.build() //drives to the rotate point
                 ),
-
-                new ParallelAction(
-                    new SequentialAction( // turns on intake and turns back off after set interval of time
+                new SequentialAction(
                         new InstantAction(() -> setIntakePower( 1.0)),
-                        new SleepAction(2),
-                        new InstantAction(() -> setIntakePower(0))
-                    ),
-                        new SequentialAction(
-                                new InstantAction(() ->slideSetpoint = BLUE_1_TOTAL_EXTENSION + BLUE_1_PARTIAL_EXTENSION), //extends to the partial point, as to slow extension
-                                new SleepAction(0.5),
-                                new InstantAction(() -> SLIDE_PID_ENABLER = false), // turns slide PID off
-                              new ParallelAction(
-                                        new InstantAction(()-> setSlidePower(-0.5)),
-                                        new InstantAction(() -> SLIDE_SET_POWER = 0.5), //extends slowly becasue i am not a skibidi programer
-                                      new SleepAction(1) // fuck this i hate this so GOD damn much
+                        new InstantAction(() -> {
+                            slideSetpoint = BLUE_1_TOTAL_EXTENSION + BLUE_1_PARTIAL_EXTENSION;
+                            armSetpoint = ARM_HORIZONTAL_POSITION;
+                            slideController.setSetpoint(slideSetpoint);
+                        }), //extends to the partial point, as to slow extension
+                        new ConditionalAction(() -> slideController.atSetpoint()),
+                        new InstantAction(()-> {
+                            SLIDE_PID_CEILING = BLUE_1_SLIDE_CEILING;
+                            slideSetpoint = BLUE_1_TOTAL_EXTENSION;
+                            slideController.setSetpoint(slideSetpoint);
+                        }),
+                        new ConditionalAction(() -> slideController.atSetpoint()),
+                        new InstantAction(()->{
+                            setIntakePower(0);
+                            SLIDE_PID_CEILING = 1;
+                            slideSetpoint = BLUE_1_TOTAL_EXTENSION + (BLUE_1_PARTIAL_EXTENSION);
+                            armSetpoint = AUTO_DRIVING_ARM_HOROZONTAL_POSITION;
+                        })
+
+                ),
+
+                rotatePointBlue1ToHPZone.build(), //turns to deposit sample into human player zone after picking up
+
+                                new SequentialAction(
+                                        new InstantAction(() -> setIntakePower(-1.0)),
+                                        new SleepAction(0.3)
+                                        //new InstantAction(() -> setIntakePower(0))
                                 ),
-                                new InstantAction(() -> {
-                                    if (Math.abs(slideMotorRight.getCurrentPosition()) > Math.abs(BLUE_1_TOTAL_EXTENSION));{
-                                        SLIDE_SET_POWER = 0;
-                                    }
-                                }),
+                                blue1ToBlue2.build(),
+                                new SequentialAction(
+                                        new InstantAction(() -> setIntakePower( 1.0)),
+                                        new InstantAction(() -> {
+                                            slideSetpoint = BLUE_2_TOTAL_EXTENSION + (BLUE_2_PARTIAL_EXTENSION);
+                                            armSetpoint = ARM_HORIZONTAL_POSITION;
+                                            slideController.setSetpoint(slideSetpoint);
+                                        }), //extends to the partial point, as to slow extension
+                                        new ConditionalAction(() -> slideController.atSetpoint()),
+                                        new InstantAction(()-> {
+                                            SLIDE_PID_CEILING = BLUE_1_SLIDE_CEILING;
+                                            slideSetpoint = BLUE_2_TOTAL_EXTENSION;
+                                            slideController.setSetpoint(slideSetpoint);
+                                        }),
+                                        new ConditionalAction(() -> slideController.atSetpoint()),
+                                        new InstantAction(()->{
+                                            setIntakePower(0);
+                                            SLIDE_PID_CEILING = 1;
+                                            slideSetpoint = BLUE_1_TOTAL_EXTENSION + (BLUE_1_PARTIAL_EXTENSION);
+                                            armSetpoint = AUTO_DRIVING_ARM_HOROZONTAL_POSITION;
+                                        }),
+                                blue2ToHPZone.build(),
+                                        new SequentialAction(
+                                                new InstantAction(() -> setIntakePower(-1.0)),
+                                                new SleepAction(0.3)
+                                                //new InstantAction(() -> setIntakePower(0))
+                                        ),
+                                blue2ToBlue3.build(),
+                                        new SequentialAction(
+                                                new InstantAction(() -> setIntakePower( 1.0)),
+                                                new InstantAction(() -> {
+                                                    slideSetpoint = BLUE_3_TOTAL_EXTENSION + BLUE_3_PARTIAL_EXTENSION;
+                                                    armSetpoint = ARM_HORIZONTAL_POSITION;
+                                                    slideController.setSetpoint(slideSetpoint);
+                                                }), //extends to the partial point, as to slow extension
+                                                new ConditionalAction(() -> slideController.atSetpoint(),2.0),
+                                                new InstantAction(()-> {
+                                                    SLIDE_PID_CEILING = BLUE_1_SLIDE_CEILING;
+                                                    slideSetpoint = BLUE_3_TOTAL_EXTENSION;
+                                                    slideController.setSetpoint(slideSetpoint);
+                                                }),
+                                                new ConditionalAction(() -> slideController.atSetpoint()),
+                                                new InstantAction(()->{
+                                                    setIntakePower(0);
+                                                    SLIDE_PID_CEILING = 1;
+                                                    slideSetpoint = BLUE_1_TOTAL_EXTENSION + (BLUE_1_PARTIAL_EXTENSION );
+                                                    armSetpoint = AUTO_DRIVING_ARM_HOROZONTAL_POSITION;
+                                                }),
+                                                blue3ToHPZone.build(),
+                                                new SequentialAction(
+                                                        new InstantAction(() -> setIntakePower(-1.0)),
+                                                        new SleepAction(0.3),
+                                                        new InstantAction(() -> setIntakePower(0))
 
 
 
 
-                rotatePointBlue1ToHPZone.build() //turns to deposit sample into human player zone after picking up
+
 //                turnAroundAfterPush.build(), // turning around to intake
 //                new InstantAction(() -> //set arm to wall intake position
 //                {
@@ -279,9 +353,15 @@ public class EXPERIMENTALSpecAuto extends RobotHardware {
 //                    slideSetpoint = Constants.SLIDE_SPECIMEN_RETRACT_TICKS; //value inputted, needs to be confirmed
 //                }),
 //                new SleepAction(30) // Stay alive
-                              )
-                )
-                );
+                ),
+        new SequentialAction(
+                new InstantAction(()-> {
+                    armSetpoint = ARM_VERTICAL_POSITION;
+                    slideSetpoint = 0;
+                }),
+                new SleepAction(30)
+        )
+        )));
         canvas = new Canvas();
         autonomous.preview(canvas);
     }
@@ -321,7 +401,9 @@ public class EXPERIMENTALSpecAuto extends RobotHardware {
             shouldRun = autonomous.run(packet);
             armPitMotor.setPower(calculateArmPower(armSetpoint));
             if (SLIDE_PID_ENABLER){
-                setSlidePower(-(slideController.calculate(getSlideEncoderPosition(), slideSetpoint) + calculateSlideFeedforward()));
+                double SLIDE_PID = -(slideController.calculate(getSlideEncoderPosition(), slideSetpoint));
+                SLIDE_PID = Math.abs(SLIDE_PID) > SLIDE_PID_CEILING ? SLIDE_PID_CEILING * Math.signum(SLIDE_PID) : SLIDE_PID;
+                setSlidePower( SLIDE_PID -calculateSlideFeedforward());
             } else {
                 setSlidePower(SLIDE_SET_POWER);
             }
@@ -332,5 +414,40 @@ public class EXPERIMENTALSpecAuto extends RobotHardware {
             setSlidePower(0.0);
             drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0.0, 0.0), 0.0));
         }
+    }
+
+    public class ConditionalAction implements Action {
+        private final Supplier<Boolean> condition;
+        private double timeout = -1;
+        private double startTime = -1;
+        public ConditionalAction(Supplier<Boolean> condition) {
+            this.condition = condition;
+        }
+
+        public ConditionalAction(Supplier<Boolean> condition, double timeout) {
+            this.condition = condition;
+            this.timeout = timeout;
+        }
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            boolean condition = this.condition.get();
+            if (condition)
+                return false;
+
+            if (timeout > 0) {
+                if (startTime < 0) {
+                    startTime = now();
+                    return true;
+                }
+                return now() - startTime < timeout;
+            }
+
+            return true;
+        }
+    }
+
+    public double now() {
+        return System.nanoTime() * 1e-9;
     }
 }

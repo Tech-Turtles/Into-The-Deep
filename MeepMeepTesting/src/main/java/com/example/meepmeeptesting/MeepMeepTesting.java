@@ -1,6 +1,7 @@
 package com.example.meepmeeptesting;
 
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Rotation2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -17,12 +18,36 @@ public class MeepMeepTesting {
     private static final double robotH = 16;
     private static final double robotHalfW = robotW/2.0;
 
-    public static double blue1Angle = -20;
+    //-------------------------------------------------------------------------
+    public static double blue1Angle = 20;
+    public static double BLUE_1_X_REL_VALUE = 19;
+    public static double BLUE_1_Y_REL_VALUE = -8.5  + 3;
+    public static double BLUE_1_DEGREE_REL_VALUE = 0;
     public static double blue1ToHPZoneAngle = -120;
-    public static double blue2Angle = 25;
-    public static double blue2ToHPZoneAngle = blue1ToHPZoneAngle + blue2Angle;
+    public static double BLUE_1_X_TO_HPZONE_REL_VALUE = -14;
+    public static double BLUE_1_Y_TO_HPZONE_REL_VALUE = -50;
+    public static double BLUE_1_DEGREE_TO_HPZONE_REL_VALUE = 140;
+    public static double blue2Angle = 30;
+    public static double BLUE_2_X_REL_VALUE = 19;
+    public static double BLUE_2_Y_REL_VALUE = 19+50;
+    public static double BLUE_2_DEGREE_REL_VALUE = -(BLUE_1_DEGREE_TO_HPZONE_REL_VALUE) + 35 -2-2;
+    public static double BLUE_2_DEGREE_TO_HPZONE_REL_VALUE = -(BLUE_1_DEGREE_TO_HPZONE_REL_VALUE) + 25;
+    public static double blue2ToHPZoneAngle = 30;
     public static double blue3Angle = 45;
+    public static double BLUE_3_X_REL_VALUE = 19;
+    public static double BLUE_3_Y_REL_VALUE = 19+40;
+    public static double BLUE_3_DEGREE_REL_VALUE = -(BLUE_2_DEGREE_TO_HPZONE_REL_VALUE) +10-20-5-15+10-3.5+1.5;
+    public static double BLUE_3_TOTAL_EXTENSION = -1400;
+    public static double BLUE_3_PARTIAL_EXTENSION = 330;
     public static double blue3ToHPZoneAngle = 45;
+    public static double BLUE_1_TOTAL_EXTENSION = -670;
+    public static double BLUE_1_PARTIAL_EXTENSION = 330;
+    public static double BLUE_2_TOTAL_EXTENSION = -900;
+    public static double BLUE_2_PARTIAL_EXTENSION = 330;
+    public static double blue3Ext = -500;
+    public static double SLIDE_CEILING_MAX = 1;
+    public static double BLUE_1_SLIDE_CEILING = 0.4;
+    //-------------------------------------------------------------------------
 
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(700);
@@ -93,28 +118,33 @@ public class MeepMeepTesting {
         TrajectoryActionBuilder placeToRotatePoint =
                 rightStartToSpecimenPlace.endTrajectory().fresh()
                         .setTangent(Math.toRadians(360))
-                        .splineToConstantHeading(new Vector2d(40, -45), Math.toRadians(0))
-                        .turn(Math.toRadians(blue1Angle));
+                        .splineToConstantHeading(new Vector2d(40+5+3.5+0.5, -45), Math.toRadians(0));
+
 
         TrajectoryActionBuilder rotatePointBlue1ToHPZone =
                 placeToRotatePoint.endTrajectory().fresh()
                         .setTangent(Math.toRadians(0))
-                        .turn(Math.toRadians(blue1ToHPZoneAngle));
+                        .turn(Math.toRadians(-BLUE_1_DEGREE_TO_HPZONE_REL_VALUE));
 
         TrajectoryActionBuilder blue1ToBlue2 =
                 rotatePointBlue1ToHPZone.endTrajectory().fresh()
                         .setTangent(Math.toRadians(0))
-                        .turn(Math.toRadians(-(blue1ToHPZoneAngle)-blue2Angle));
+                        .turn(Math.toRadians(-BLUE_2_DEGREE_REL_VALUE));
 
         TrajectoryActionBuilder blue2ToHPZone =
                 blue1ToBlue2.endTrajectory().fresh()
                         .setTangent(Math.toRadians(0))
-                        .turn(Math.toRadians(blue2ToHPZoneAngle));
+                        .turn(Math.toRadians(BLUE_2_DEGREE_REL_VALUE));
 
         TrajectoryActionBuilder blue2ToBlue3 =
-                blue1ToBlue2.endTrajectory().fresh()
+                blue2ToHPZone.endTrajectory().fresh()
                         .setTangent(Math.toRadians(0))
-                        .turn(Math.toRadians(-(blue2ToHPZoneAngle)-blue3Angle));
+                        .turn(Math.toRadians(BLUE_3_DEGREE_REL_VALUE));
+
+        TrajectoryActionBuilder blue3ToHPZone =
+                blue2ToBlue3.endTrajectory().fresh()
+                        .setTangent(Math.toRadians(0))
+                        .turn(Math.toRadians(-BLUE_3_DEGREE_REL_VALUE));
 
 //        myBot.runAction(
 //                new SequentialAction(
@@ -135,11 +165,13 @@ public class MeepMeepTesting {
 
         myBot.runAction(
                 new SequentialAction(
-                        rightStartToSpecimenPlace.build(),
-                        placeToRotatePoint.build(),
-                        rotatePointBlue1ToHPZone.build(),
-                        blue1ToBlue2.build(),
-                        blue2ToHPZone.build()
+//                        rightStartToSpecimenPlace.build(),
+//                        placeToRotatePoint.build(),
+//                        rotatePointBlue1ToHPZone.build(),
+                        blue1ToBlue2.build()
+//                        blue2ToHPZone.build(),
+//                        blue2ToBlue3.build(),
+//                        blue3ToHPZone.build()
                 )
         );
 

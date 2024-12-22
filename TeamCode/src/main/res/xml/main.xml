@@ -10,6 +10,7 @@
 
             <ControlHubImuBHI260AP name="IMU 1" port="0" bus="0" />
             <RevColorSensorV3 name="IntakeColorSensor" port="1" bus="0" />
+            <SparkFunOTOS name="otos" port="0" bus="3" />
         </LynxModule>
         <LynxModule name="Expansion Hub 1" port="1">
             <goBILDA5202SeriesMotor     name = "FrontLeftDrive" port = "0" />
@@ -21,4 +22,5 @@
             <ContinuousRotationServo    name = "RightIntakeCRServo"  port = "2" />
         </LynxModule>
     </LynxUsbDevice>
+    <EthernetDevice name="Ethernet Device" serialNumber="EthernetOverUsb:eth0:172.29.0.23" port="0" ipAddress="172.29.0.1" />
 </Robot>

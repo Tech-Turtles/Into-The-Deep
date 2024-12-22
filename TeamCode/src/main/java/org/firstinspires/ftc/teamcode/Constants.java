@@ -80,18 +80,38 @@ public final class Constants {
     public static double robotH = 16;
     public static double robotHalfW = robotW / 2.0;
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////
+    //-------------------------------------------------------------------------
     public static double blue1Angle = 20;
+    public static double BLUE_1_X_REL_VALUE = 19;
+    public static double BLUE_1_Y_REL_VALUE = -8.5  + 3;
+    public static double BLUE_1_DEGREE_REL_VALUE = 0;
     public static double blue1ToHPZoneAngle = -120;
+    public static double BLUE_1_X_TO_HPZONE_REL_VALUE = -14;
+    public static double BLUE_1_Y_TO_HPZONE_REL_VALUE = -50;
+    public static double BLUE_1_DEGREE_TO_HPZONE_REL_VALUE = 140;
     public static double blue2Angle = 30;
+    public static double BLUE_2_X_REL_VALUE = 19;
+    public static double BLUE_2_Y_REL_VALUE = 19+50;
+    public static double BLUE_2_DEGREE_REL_VALUE = -(BLUE_1_DEGREE_TO_HPZONE_REL_VALUE) + 35 -2-1;
+    public static double BLUE_2_DEGREE_TO_HPZONE_REL_VALUE = -(BLUE_1_DEGREE_TO_HPZONE_REL_VALUE) + 25;
     public static double blue2ToHPZoneAngle = 30;
     public static double blue3Angle = 45;
+    public static double BLUE_3_X_REL_VALUE = 19;
+    public static double BLUE_3_Y_REL_VALUE = 19+40;
+    public static double BLUE_3_DEGREE_REL_VALUE = -(BLUE_2_DEGREE_TO_HPZONE_REL_VALUE) +10-20-5-15+10-3.5+1.5;
+    public static double BLUE_3_TOTAL_EXTENSION = -((SLIDE_HORIZONTAL_LIMIT_ROTATIONS * SLIDE_TICKS_PER_ROTATION) + 155) ;
+    public static double BLUE_3_PARTIAL_EXTENSION = 430+50;
     public static double blue3ToHPZoneAngle = 45;
-    public static double BLUE_1_TOTAL_EXTENSION = -570;
-    public static double BLUE_1_PARTIAL_EXTENSION = 230;
-    public static double blue2Ext = -500;
+    public static double BLUE_1_TOTAL_EXTENSION = -670;
+    public static double BLUE_1_PARTIAL_EXTENSION = 430;
+    public static double BLUE_2_TOTAL_EXTENSION = -750;
+    public static double BLUE_2_PARTIAL_EXTENSION = 430;
     public static double blue3Ext = -500;
-////////////////////////////////////////////////////////////////////////////////////////////////////
+    public static double SLIDE_CEILING_MAX = 1;
+    public static double BLUE_1_SLIDE_CEILING = 0.4;
+    public static double AUTO_DRIVING_ARM_HOROZONTAL_POSITION = -1350;
+    //-------------------------------------------------------------------------
+
     private Constants() {
         throw new AssertionError("Utility class");
     }

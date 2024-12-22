@@ -38,7 +38,7 @@ public class PIDController {
     private double m_totalError;
 
     // The error that is considered at setpoint.
-    private double m_positionTolerance = 0.05;
+    private double m_positionTolerance = 10;
     private double m_velocityTolerance = Double.POSITIVE_INFINITY;
 
     private double m_setpoint;
