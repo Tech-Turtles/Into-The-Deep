@@ -68,6 +68,10 @@ public final class Constants {
     public static double AUTO_maxProfileAccel = 30;
     public static double AUTO_maxAngVel_Mult = 1;
     public static double maxAngAccel_Mult = 1;
+    public static double AUTO_axialGain = 1.5;
+    public static double AUTO_lateralGain = 2.0;
+    public static double AUTO_headingGain = 3.0;
+
 
     // ------------------------------
     // Drive Controls

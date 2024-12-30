@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.roadrunner;
 
+import static org.firstinspires.ftc.teamcode.Constants.AUTO_axialGain;
+import static org.firstinspires.ftc.teamcode.Constants.AUTO_headingGain;
+import static org.firstinspires.ftc.teamcode.Constants.AUTO_lateralGain;
 import static org.firstinspires.ftc.teamcode.Constants.AUTO_maxAngVel_Mult;
 import static org.firstinspires.ftc.teamcode.Constants.AUTO_maxProfileAccel;
 import static org.firstinspires.ftc.teamcode.Constants.AUTO_maxWheelVel;
@@ -84,7 +87,7 @@ public class MecanumDrive {
     public final VoltageSensor voltageSensor;
     public final LazyImu lazyImu;
     public final Localizer localizer;
-    private final LinkedList<Pose2d> poseHistory = new LinkedList<>();
+    public final LinkedList<Pose2d> poseHistory = new LinkedList<>();
     private final DownsampledWriter estimatedPoseWriter = new DownsampledWriter("ESTIMATED_POSE", 50_000_000);
     private final DownsampledWriter targetPoseWriter = new DownsampledWriter("TARGET_POSE", 50_000_000);
     private final DownsampledWriter driveCommandWriter = new DownsampledWriter("DRIVE_COMMAND", 50_000_000);
@@ -198,13 +201,13 @@ public class MecanumDrive {
                 RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD;
 
         // drive model parameters
-        public double inPerTick = 170.75 / 5482.0;
-        public double lateralInPerTick =  (124.25/ 3707.66666667) / 1.2474849094567404426559356136821;
-        public double trackWidthTicks = 799.8413602843218;
+        public double inPerTick = 1;
+        public double lateralInPerTick =  1.3103000824881623 ; //(124.25/ 3707.66666667) / 1.2474849094567404426559356136821;
+        public double trackWidthTicks = 1.631883418669837; //799.8413602843218;
 
         // feedforward parameters (in tick units)
-        public double kS = 2.371207049508408;
-        public double kV = 0.0040186186443550015;
+        public double kS =  4.4911790447892574;
+        public double kV = 0.653978499743728;
         public double kA = 0;
 
         // path profile parameters (in inches)
@@ -217,9 +220,9 @@ public class MecanumDrive {
         public double maxAngAccel = Math.PI * maxAngAccel_Mult ;
 
         // path controller gains
-        public double axialGain = 1.5;
-        public double lateralGain = 2.0;
-        public double headingGain = 3.0; // shared with turn
+        public double axialGain = AUTO_axialGain;
+        public double lateralGain = AUTO_lateralGain;
+        public double headingGain = AUTO_headingGain; // shared with turn
 
         public double axialVelGain = 0.0;
         public double lateralVelGain = 0.0;
@@ -230,7 +233,7 @@ public class MecanumDrive {
         public final Encoder leftFront, leftBack, rightBack, rightFront;
         public final IMU imu;
 
-        private int lastLeftFrontPos, lastLeftBackPos, lastRightBackPos, lastRightFrontPos;
+        private double lastLeftFrontPos, lastLeftBackPos, lastRightBackPos, lastRightFrontPos;
         private Rotation2d lastHeading;
         private boolean initialized;
 

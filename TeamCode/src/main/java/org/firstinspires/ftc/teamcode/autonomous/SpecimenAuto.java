@@ -25,12 +25,13 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.RobotHardware;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
+import org.firstinspires.ftc.teamcode.roadrunner.SparkFunOTOSDrive;
 import org.firstinspires.ftc.teamcode.utility.PIDController;
 
 @Autonomous(group = "A")
 public class SpecimenAuto extends RobotHardware {
 
-    private MecanumDrive drive;
+    private SparkFunOTOSDrive drive;
     private Canvas canvas;
     private Action autonomous;
     private double armSetpoint = 0;
@@ -53,7 +54,7 @@ public class SpecimenAuto extends RobotHardware {
         armController = new PIDController(ARM_P  +AUTO_ARM_P_FUDGE_FACTOR, ARM_I + AUTO_ARM_I_FUDGE_FACTOR, ARM_D + AUTO_ARM_D_FUDGE_FACTOR, autoLoopTime);
         slideController = new PIDController(SLIDE_P +AUTO_SLIDE_P_FUDGE_FACTOR, SLIDE_I + AUTO_SLIDE_I_FUDGE_FACTOR, SLIDE_D + AUTO_SLIDE_D_FUDGE_FACTOR, autoLoopTime);
 
-        drive = new MecanumDrive(hardwareMap, new Pose2d(8.75, (-72 + robotHalfW), Math.toRadians(90.0)));
+        drive = new SparkFunOTOSDrive(hardwareMap, new Pose2d(8.75, (-72 + robotHalfW), Math.toRadians(90.0)));
 
         TrajectoryActionBuilder rightStartToSpecimenPlace =
                 drive.actionBuilder(new Pose2d(10, (-72 + robotHalfW ), Math.toRadians(90))) // added 6in to line up edge of the robot on the left side of the feild tile perforation
