@@ -34,7 +34,7 @@ public final class Constants {
     // Arm Mechanism Constants
     // ------------------------------
     public static int ARM_FEEDFORWARD_EXPONENT = 2;
-    public static double ARM_HIGH_SPEC_PIVOT_ANGLE = 800;
+    public static double ARM_HIGH_SPEC_PIVOT_ANGLE = 800-50;
     public static double ARM_HIGH_SAMPLE_PIVOT_ANGLE = 400;
     public static double ARM_LOW_SAMPLE_PIVOT_ANGLE = 350;
     public static double ARM_HIGH_SPEC_PLACE_PIVOT_ANGLE = 380;
@@ -44,7 +44,7 @@ public final class Constants {
     public static double ARM_HIGH_CHAMBER_END_POSITION = 50;
     public static double ARM_WALL_SPEC_INTAKE_ANGLE = -600;
 
-    public static double TELE_ARM_WALL_SPEC_INTAKE_ANGLE = -600;
+    public static double TELE_ARM_WALL_SPEC_INTAKE_ANGLE = -600-50;
     public static double ARM_FEEDFORWARD = 0.145;
     public static double ARM_FEEDFORWARD_MAX = 0.3;
     public static double ARM_ZERO_OFFSET = 1450;
@@ -60,14 +60,14 @@ public final class Constants {
     public static double AUTO_ARM_P_FUDGE_FACTOR = -0.00625;
     public static double AUTO_ARM_I_FUDGE_FACTOR = 0.00;
     public static double AUTO_ARM_D_FUDGE_FACTOR = 0.0002;
-    public static double AUTO_SLIDE_P_FUDGE_FACTOR = 0.00;
+    public static double AUTO_SLIDE_P_FUDGE_FACTOR = -0.005;
     public static double AUTO_SLIDE_I_FUDGE_FACTOR = 0.002;
     public static double AUTO_SLIDE_D_FUDGE_FACTOR = 0.00024;
-    public static double AUTO_maxWheelVel = 30;
-    public static double AUTO_minProfileAccel = -30;
-    public static double AUTO_maxProfileAccel = 30;
-    public static double AUTO_maxAngVel_Mult = 1;
-    public static double maxAngAccel_Mult = 1;
+    public static double AUTO_maxWheelVel = 37;
+    public static double AUTO_minProfileAccel = -37;
+    public static double AUTO_maxProfileAccel = 37;
+    public static double AUTO_maxAngVel_Mult = 1.25;
+    public static double maxAngAccel_Mult = 1.25;
 
     // ------------------------------
     // Drive Controls
@@ -88,7 +88,7 @@ public final class Constants {
     public static double blue1ToHPZoneAngle = -120;
     public static double BLUE_1_X_TO_HPZONE_REL_VALUE = -14;
     public static double BLUE_1_Y_TO_HPZONE_REL_VALUE = -50;
-    public static double BLUE_1_DEGREE_TO_HPZONE_REL_VALUE = 140;
+    public static double BLUE_1_DEGREE_TO_HPZONE_REL_VALUE = 140+40;
     public static double blue2Angle = 30;
     public static double BLUE_2_X_REL_VALUE = 19;
     public static double BLUE_2_Y_REL_VALUE = 19+50;

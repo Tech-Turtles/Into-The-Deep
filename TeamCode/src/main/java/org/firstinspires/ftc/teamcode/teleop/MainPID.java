@@ -46,7 +46,23 @@ public class MainPID extends RobotHardware {
     @Override
     public void loop() {
         super.loop();
-
+//        if (controller1.leftBumper()) {
+//            if (!colorSensorStop || intakeSensor.getDistance(DistanceUnit.INCH) > COLOR_SENSOR_STOP_DISTANCE) {
+//                setIntakePower(maxIntakeSpeed);
+//                intakeOn = true;
+//            } else {
+//                setIntakePower(0);
+//                intakeOn = false;
+//            }
+//        } else if (controller1.rightBumper()) {
+//            setIntakePower(-maxIntakeSpeed);
+//            intakeOn = false;
+//        } else if (!intakeOn) {
+//            setIntakePower(0);
+//        } else if (colorSensorStop && intakeSensor.getDistance(DistanceUnit.INCH) < COLOR_SENSOR_STOP_DISTANCE) {
+//            setIntakePower(0);
+//            intakeOn = false;
+//        }
         if (controller2.rightBumper()) {
             intakeOn = !shouldStopIntake();
             setIntakePower(intakeOn ? maxIntakeSpeed : 0);
@@ -75,8 +91,6 @@ public class MainPID extends RobotHardware {
         }
 
         if (controller2.rightStickButton()){
-            setIntakePower(-1.0);
-            setIntakePower(-1.0);
             setIntakePower(0.0);
             armPitTarget = ARM_HIGH_SPEC_PIVOT_ANGLE;
             slideSetpoint = HIGH_SPEC_WALL_EXT_SLIDE + 36;
