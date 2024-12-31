@@ -30,13 +30,13 @@ public class MeepMeepTesting {
     public static double blue2Angle = 30;
     public static double BLUE_2_X_REL_VALUE = 19;
     public static double BLUE_2_Y_REL_VALUE = 19+50;
-    public static double BLUE_2_DEGREE_REL_VALUE = -(BLUE_1_DEGREE_TO_HPZONE_REL_VALUE) + 35 -2-2;
-    public static double BLUE_2_DEGREE_TO_HPZONE_REL_VALUE = -(BLUE_1_DEGREE_TO_HPZONE_REL_VALUE) + 25;
+    public static double BLUE_2_DEGREE_REL_VALUE = -(BLUE_1_DEGREE_TO_HPZONE_REL_VALUE) + 35 -2-2+2-2-2-2;
+    public static double BLUE_2_DEGREE_TO_HPZONE_REL_VALUE = -(BLUE_1_DEGREE_TO_HPZONE_REL_VALUE) + 158;
     public static double blue2ToHPZoneAngle = 30;
     public static double blue3Angle = 45;
     public static double BLUE_3_X_REL_VALUE = 19;
     public static double BLUE_3_Y_REL_VALUE = 19+40;
-    public static double BLUE_3_DEGREE_REL_VALUE = -(BLUE_2_DEGREE_TO_HPZONE_REL_VALUE) +10-20-5-15+10-3.5+1.5;
+    public static double BLUE_3_DEGREE_REL_VALUE = -(BLUE_2_DEGREE_TO_HPZONE_REL_VALUE) +10-20-5-15+10-3.5+0.5;
     public static double BLUE_3_TOTAL_EXTENSION = -1400;
     public static double BLUE_3_PARTIAL_EXTENSION = 330;
     public static double blue3ToHPZoneAngle = 45;
@@ -47,6 +47,7 @@ public class MeepMeepTesting {
     public static double blue3Ext = -500;
     public static double SLIDE_CEILING_MAX = 1;
     public static double BLUE_1_SLIDE_CEILING = 0.4;
+
     //-------------------------------------------------------------------------
 
     public static void main(String[] args) {
@@ -146,6 +147,37 @@ public class MeepMeepTesting {
                         .setTangent(Math.toRadians(0))
                         .turn(Math.toRadians(-BLUE_3_DEGREE_REL_VALUE));
 
+        TrajectoryActionBuilder blue2ToWallPickUp =
+                blue2ToBlue3.endTrajectory().fresh()
+                        .setTangent(Math.toRadians(90))
+                        .splineToConstantHeading(new Vector2d(40+5+3.5+0.5, -70 + robotHalfW + 5), Math.toRadians(90));
+
+        TrajectoryActionBuilder wallPickUpToSpecPlace1 =
+                blue2ToWallPickUp.endTrajectory().fresh()
+                        .setTangent(Math.toRadians(90))
+                        .turn(Math.toRadians(180))
+                        .splineToConstantHeading(new Vector2d(0 -3, (-24 - robotHalfW)), Math.toRadians(160));
+
+        TrajectoryActionBuilder specPlace1ToRotatePoint =
+                wallPickUpToSpecPlace1.endTrajectory().fresh()
+                        .setTangent(Math.toRadians(90))
+                        .splineToConstantHeading(new Vector2d(0 -3, (-24 - robotHalfW - 5)), Math.toRadians(90))
+                        .turn(Math.toRadians(-180))
+                        .setTangent(Math.toRadians(-20))
+                        .splineToConstantHeading(new Vector2d(40+5+3.5+0.5, -45), Math.toRadians(0));
+
+        TrajectoryActionBuilder specPlace1RotatePointToWall =
+                specPlace1ToRotatePoint.endTrajectory().fresh()
+                        .setTangent(Math.toRadians(90))
+                        .splineToConstantHeading(new Vector2d(40+5+3.5+0.5, -70 + robotHalfW + 5), Math.toRadians(90));
+
+        TrajectoryActionBuilder wallPickUpToSpecPlace2 =
+                specPlace1RotatePointToWall.endTrajectory().fresh()
+                        .setTangent(Math.toRadians(90))
+                        .turn(Math.toRadians(180))
+                        .splineToConstantHeading(new Vector2d(0 +5, (-24 - robotHalfW)), Math.toRadians(160));
+
+
 //        myBot.runAction(
 //                new SequentialAction(
 //                        rightStartToSpecimenPlace.build(),
@@ -165,13 +197,19 @@ public class MeepMeepTesting {
 
         myBot.runAction(
                 new SequentialAction(
-//                        rightStartToSpecimenPlace.build(),
-//                        placeToRotatePoint.build(),
-//                        rotatePointBlue1ToHPZone.build(),
-                        blue1ToBlue2.build()
-//                        blue2ToHPZone.build(),
-//                        blue2ToBlue3.build(),
-//                        blue3ToHPZone.build()
+                        rightStartToSpecimenPlace.build(),
+                        placeToRotatePoint.build(),
+                        rotatePointBlue1ToHPZone.build(),
+                      blue1ToBlue2.build(),
+                        blue2ToHPZone.build(),
+                        blue2ToBlue3.build(),
+                        //blue3ToHPZone.build()
+                        blue2ToWallPickUp.build(),
+                        wallPickUpToSpecPlace1.build(),
+                        specPlace1ToRotatePoint.build(),
+                        specPlace1RotatePointToWall.build(),
+                        wallPickUpToSpecPlace2.build()
+
                 )
         );
 

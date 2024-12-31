@@ -75,12 +75,16 @@ public class MainPID extends RobotHardware {
         }
 
         if (controller2.rightStickButton()){
-            setIntakePower(0);
+            setIntakePower(-1.0);
+            setIntakePower(-1.0);
+            setIntakePower(0.0);
             armPitTarget = ARM_HIGH_SPEC_PIVOT_ANGLE;
             slideSetpoint = HIGH_SPEC_WALL_EXT_SLIDE + 36;
         }
 
         if (controller2.leftStickButton()){
+            intakeOn = true;
+            setIntakePower(1.0);
             armPitTarget = TELE_ARM_WALL_SPEC_INTAKE_ANGLE;
             slideSetpoint = 20;
         }

@@ -29,7 +29,7 @@ public final class Constants {
     public static double RETRACT_FUDGE_LIMIT_TICKS = 20;
     public static double SLIDE_TICKS_PER_ROTATION = 537.7;
     public static double SLIDE_HORIZONTAL_LIMIT_ROTATIONS = 1.55;
-    public static double SLIDE_SPECIMEN_RETRACT_TICKS = -134;
+    public static double SLIDE_SPECIMEN_RETRACT_TICKS = -150;
     // ------------------------------
     // Arm Mechanism Constants
     // ------------------------------
@@ -92,8 +92,8 @@ public final class Constants {
     public static double blue2Angle = 30;
     public static double BLUE_2_X_REL_VALUE = 19;
     public static double BLUE_2_Y_REL_VALUE = 19+50;
-    public static double BLUE_2_DEGREE_REL_VALUE = -(BLUE_1_DEGREE_TO_HPZONE_REL_VALUE) + 35 -2-1;
-    public static double BLUE_2_DEGREE_TO_HPZONE_REL_VALUE = -(BLUE_1_DEGREE_TO_HPZONE_REL_VALUE) + 25;
+    public static double BLUE_2_DEGREE_REL_VALUE = -(BLUE_1_DEGREE_TO_HPZONE_REL_VALUE) + 35 -2-2+2-2-2-2;
+    public static double BLUE_2_DEGREE_TO_HPZONE_REL_VALUE = -(BLUE_1_DEGREE_TO_HPZONE_REL_VALUE) + 158;
     public static double blue2ToHPZoneAngle = 30;
     public static double blue3Angle = 45;
     public static double BLUE_3_X_REL_VALUE = 19;
