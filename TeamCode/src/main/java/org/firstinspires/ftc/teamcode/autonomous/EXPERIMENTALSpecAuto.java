@@ -25,6 +25,7 @@ import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.RobotHardware;
 import org.firstinspires.ftc.teamcode.roadrunner.MecanumDrive;
@@ -190,7 +191,7 @@ public class EXPERIMENTALSpecAuto extends RobotHardware {
                 blue2WallPickUpReverse.endTrajectory().fresh()
                         .turn(Math.toRadians(180))
                         .setTangent(Math.toRadians(180))
-                        .splineToConstantHeading(new Vector2d(0 +3, (-24 - robotHalfW)), Math.toRadians(90));
+                        .splineToConstantHeading(new Vector2d(0 +5, (-24 - robotHalfW)), Math.toRadians(90));
 
         TrajectoryActionBuilder specPlace1ToRotatePoint =
                 wallPickUpToSpecPlace1.endTrajectory().fresh()
@@ -207,7 +208,7 @@ public class EXPERIMENTALSpecAuto extends RobotHardware {
                 specPlace1RotatePointToWall.endTrajectory().fresh()
                         .turn(Math.toRadians(180))
                         .setTangent(Math.toRadians(180))
-                        .splineToConstantHeading(new Vector2d(0 +5, (-24 - robotHalfW)), Math.toRadians(90));
+                        .splineToConstantHeading(new Vector2d(0 +7, (-24 - robotHalfW)), Math.toRadians(90));
 
         TrajectoryActionBuilder specPlace2ToWall =
                 wallPickUpToSpecPlace2.endTrajectory().fresh()
@@ -273,7 +274,7 @@ public class EXPERIMENTALSpecAuto extends RobotHardware {
                 new ParallelAction( //turns on intake and sets arm to wall intake pos
                         new InstantAction(() -> setIntakePower(1.0)),
                         new InstantAction(() -> {
-                            armSetpoint = TELE_ARM_WALL_SPEC_INTAKE_ANGLE;
+                            armSetpoint = TELE_ARM_WALL_SPEC_INTAKE_ANGLE - 50 - 50;
                             slideSetpoint = 20;
                         })
                 ),
@@ -380,6 +381,11 @@ public class EXPERIMENTALSpecAuto extends RobotHardware {
 
         displayData("Slide Position", getSlideEncoderPosition());
         displayData("Slide Extension Setpoint", slideSetpoint);
+        displayData("Front Left Drive Motor Position", frontLeft.getCurrentPosition());
+        displayData("Front Right Drive Motor Position", frontRight.getCurrentPosition());
+        displayData("Rear Left Drive Motor Position", rearLeft.getCurrentPosition());
+        displayData("Rear Right Drive Motor Position", rearRight.getCurrentPosition());
+        displayData("IMU angle", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
     }
 
     @Override
