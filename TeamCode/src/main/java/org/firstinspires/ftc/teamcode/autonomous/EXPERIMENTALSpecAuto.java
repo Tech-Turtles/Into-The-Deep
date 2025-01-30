@@ -191,7 +191,7 @@ public class EXPERIMENTALSpecAuto extends RobotHardware {
                 blue2WallPickUpReverse.endTrajectory().fresh()
                         .turn(Math.toRadians(180))
                         .setTangent(Math.toRadians(180))
-                        .splineToConstantHeading(new Vector2d(0 +5, (-24 - robotHalfW)), Math.toRadians(90));
+                        .splineToConstantHeading(new Vector2d(0 +5-4, (-24 - robotHalfW)), Math.toRadians(90));
 
         TrajectoryActionBuilder specPlace1ToRotatePoint =
                 wallPickUpToSpecPlace1.endTrajectory().fresh()
@@ -208,7 +208,7 @@ public class EXPERIMENTALSpecAuto extends RobotHardware {
                 specPlace1RotatePointToWall.endTrajectory().fresh()
                         .turn(Math.toRadians(180))
                         .setTangent(Math.toRadians(180))
-                        .splineToConstantHeading(new Vector2d(0 +7, (-24 - robotHalfW)), Math.toRadians(90));
+                        .splineToConstantHeading(new Vector2d(0 +7-3, (-24 - robotHalfW)), Math.toRadians(90));
 
         TrajectoryActionBuilder specPlace2ToWall =
                 wallPickUpToSpecPlace2.endTrajectory().fresh()
@@ -219,14 +219,14 @@ public class EXPERIMENTALSpecAuto extends RobotHardware {
         autonomous = new SequentialAction(
                 new InstantAction(() -> //does on start, set arm to spec deposit
                 {
-                    armSetpoint = Constants.ARM_HIGH_SPEC_PLACE_PIVOT_ANGLE;
+                    armSetpoint = Constants.ARM_HIGH_SPEC_PLACE_PIVOT_ANGLE-15;
                     slideSetpoint = Constants.HIGH_SPEC_EXT_SLIDE;
                     new SleepAction(0.2);
                 }),
                 rightStartToSpecimenPlace.build(), //drives to chamber
                 new InstantAction(() -> // places spec
                 {
-                    armSetpoint = Constants.ARM_HIGH_SPEC_PLACE_PIVOT_ANGLE;
+                    armSetpoint = Constants.ARM_HIGH_SPEC_PLACE_PIVOT_ANGLE-15;
                     slideSetpoint = Constants.SLIDE_SPECIMEN_RETRACT_TICKS; //value inputted, needs to be confirmed
                 }),
                 new SleepAction(0.25),
@@ -291,7 +291,7 @@ public class EXPERIMENTALSpecAuto extends RobotHardware {
                 blue2WallPickUpReverse.build(), //drives backwards as to not swipe sample
                 wallPickUpToSpecPlace1.build(),
                 new SequentialAction( // places spec
-                        new InstantAction(() -> armSetpoint = Constants.ARM_HIGH_SPEC_PLACE_PIVOT_ANGLE),
+                        new InstantAction(() -> armSetpoint = Constants.ARM_HIGH_SPEC_PLACE_PIVOT_ANGLE -15),
                         new SleepAction(0.25),
                         new InstantAction(() ->slideSetpoint = Constants.SLIDE_SPECIMEN_RETRACT_TICKS)
                 ),
@@ -332,7 +332,7 @@ public class EXPERIMENTALSpecAuto extends RobotHardware {
                         )
                 ),
                 new SequentialAction( // places spec
-                        new InstantAction(() -> armSetpoint = Constants.ARM_HIGH_SPEC_PLACE_PIVOT_ANGLE),
+                        new InstantAction(() -> armSetpoint = Constants.ARM_HIGH_SPEC_PLACE_PIVOT_ANGLE-15),
                         new SleepAction(0.25),
                         new InstantAction(() -> slideSetpoint = Constants.SLIDE_SPECIMEN_RETRACT_TICKS)
                 ),

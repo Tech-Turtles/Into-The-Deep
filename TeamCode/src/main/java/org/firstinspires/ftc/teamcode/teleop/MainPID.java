@@ -15,6 +15,7 @@ import static org.firstinspires.ftc.teamcode.Constants.HIGH_SPEC_EXT_SLIDE;
 import static org.firstinspires.ftc.teamcode.Constants.HIGH_SPEC_WALL_EXT_SLIDE;
 import static org.firstinspires.ftc.teamcode.Constants.LOW_SAMPLE_EXT_SLIDE;
 import static org.firstinspires.ftc.teamcode.Constants.TELE_ARM_WALL_SPEC_INTAKE_ANGLE;
+import static org.firstinspires.ftc.teamcode.Constants.*;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -75,6 +76,7 @@ public class MainPID extends RobotHardware {
 
         if (controller2.dpadLeft()) {
             armPitTarget = ARM_BUCKET_SAMPLE_ANGLE;
+            slideSetpoint = CHAMBER_INTAKE_EXT_SLIDE;
         }
 
         if (controller2.dpadUp()) {
@@ -93,7 +95,7 @@ public class MainPID extends RobotHardware {
         if (controller2.rightStickButton()){
             setIntakePower(0.0);
             armPitTarget = ARM_HIGH_SPEC_PIVOT_ANGLE;
-            slideSetpoint = HIGH_SPEC_WALL_EXT_SLIDE + 36;
+            slideSetpoint = HIGH_SPEC_WALL_EXT_SLIDE;
         }
 
         if (controller2.leftStickButton()){
@@ -104,7 +106,7 @@ public class MainPID extends RobotHardware {
         }
 
         if (controller2.triangle()) {
-            slideSetpoint = HIGH_SPEC_EXT_SLIDE + 36;
+            slideSetpoint = HIGH_SPEC_EXT_SLIDE;
             armPitTarget = ARM_HIGH_SPEC_PIVOT_ANGLE;
         }
 
@@ -146,6 +148,7 @@ public class MainPID extends RobotHardware {
                 || controller2.cross()
                 || controller2.rightStickButton()
                 || controller2.leftStickButton()
+                || controller2.dpadLeft()
         ){
             setSlidePower(slidePower);
         } else {

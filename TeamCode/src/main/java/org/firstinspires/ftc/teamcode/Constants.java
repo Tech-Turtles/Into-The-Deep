@@ -19,8 +19,8 @@ public final class Constants {
     public static double SLIDE_FEEDFORWARD_BASE = 0.4;
     public static double SLIDE_FEEDFORWARD_MAX = 0.58;
     public static double SLIDE_EXTENSION_LIMIT_TICKS = -1223;
-    public static double HIGH_SPEC_EXT_SLIDE = -400;
-    public static double HIGH_SPEC_WALL_EXT_SLIDE = -425;
+    public static double HIGH_SPEC_EXT_SLIDE = -430;
+    public static double HIGH_SPEC_WALL_EXT_SLIDE = -430;
     //public static double HIGH_SPEC_PLACE_EXT = -200;
     public static double HIGH_SAMPLE_EXT_SLIDE = SLIDE_EXTENSION_LIMIT_TICKS;
     public static double LOW_SAMPLE_EXT_SLIDE = -525;
@@ -30,6 +30,7 @@ public final class Constants {
     public static double SLIDE_TICKS_PER_ROTATION = 537.7;
     public static double SLIDE_HORIZONTAL_LIMIT_ROTATIONS = 1.55;
     public static double SLIDE_SPECIMEN_RETRACT_TICKS = -150;
+    public static double CHAMBER_INTAKE_EXT_SLIDE = /*-120*/ -60;
     // ------------------------------
     // Arm Mechanism Constants
     // ------------------------------
