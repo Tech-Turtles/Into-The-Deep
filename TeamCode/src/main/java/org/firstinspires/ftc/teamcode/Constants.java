@@ -12,15 +12,15 @@ public final class Constants {
     // ------------------------------
     // Slide Mechanism Constants
     // ------------------------------
-    public static double SLIDE_P = 0.025;
-    public static double SLIDE_I = 0.01;
-    public static double SLIDE_D = 0.00001;
+    public static double SLIDE_P = 0.018 /* 0.025 */ ;
+    public static double SLIDE_I = 0.0 /* 0.01 */ ;
+    public static double SLIDE_D = 0.00004 /* 0.00001 */ ;
     public static double SLIDE_FEEDFORWARD_EXPONENT = 0.5;
     public static double SLIDE_FEEDFORWARD_BASE = 0.4;
     public static double SLIDE_FEEDFORWARD_MAX = 0.58;
     public static double SLIDE_EXTENSION_LIMIT_TICKS = -1223;
-    public static double HIGH_SPEC_EXT_SLIDE = -430;
-    public static double HIGH_SPEC_WALL_EXT_SLIDE = -430;
+    public static double HIGH_SPEC_EXT_SLIDE = -410;
+    public static double HIGH_SPEC_WALL_EXT_SLIDE = -410;
     //public static double HIGH_SPEC_PLACE_EXT = -200;
     public static double HIGH_SAMPLE_EXT_SLIDE = SLIDE_EXTENSION_LIMIT_TICKS;
     public static double LOW_SAMPLE_EXT_SLIDE = -525;
@@ -30,7 +30,7 @@ public final class Constants {
     public static double SLIDE_TICKS_PER_ROTATION = 537.7;
     public static double SLIDE_HORIZONTAL_LIMIT_ROTATIONS = 1.55;
     public static double SLIDE_SPECIMEN_RETRACT_TICKS = -150;
-    public static double CHAMBER_INTAKE_EXT_SLIDE = /*-120*/ -60;
+    public static double CHAMBER_INTAKE_EXT_SLIDE = /*-120*/ -55;
     // ------------------------------
     // Arm Mechanism Constants
     // ------------------------------
@@ -41,7 +41,7 @@ public final class Constants {
     public static double ARM_HIGH_SPEC_PLACE_PIVOT_ANGLE = 380;
     public static double ARM_BUCKET_SAMPLE_ANGLE = -800;
     public static double ARM_VERTICAL_POSITION = 700;
-    public static double ARM_HORIZONTAL_POSITION = -1500;
+    public static double ARM_HORIZONTAL_POSITION = -1450;
     public static double ARM_HIGH_CHAMBER_END_POSITION = 50;
     public static double ARM_WALL_SPEC_INTAKE_ANGLE = -600;
 
