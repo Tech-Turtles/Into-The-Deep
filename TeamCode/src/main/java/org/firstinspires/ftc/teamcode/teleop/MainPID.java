@@ -77,6 +77,8 @@ public class MainPID extends RobotHardware {
         if (controller2.dpadLeft()) {
             armPitTarget = ARM_BUCKET_SAMPLE_ANGLE;
             slideSetpoint = CHAMBER_INTAKE_EXT_SLIDE;
+            intakeOn = true;
+            setIntakePower(1.0);
         }
 
         if (controller2.dpadUp()) {

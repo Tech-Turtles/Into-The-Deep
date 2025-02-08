@@ -63,7 +63,7 @@ public class MeepMeepTesting {
 
         TrajectoryActionBuilder rightStartToSpecimenPlace =
                 myBot.getDrive().actionBuilder(new Pose2d(8.75, (-72 + robotHalfW), Math.toRadians(90)))
-                .splineTo(new Vector2d(0 - 5, (-24 - robotHalfW)), Math.toRadians(90));
+                .splineTo(new Vector2d(0 - 3, (-24 - robotHalfW)), Math.toRadians(90));
 
 
         TrajectoryActionBuilder chamberToSpikeMark =
@@ -164,7 +164,7 @@ public class MeepMeepTesting {
                 blue2WallPickUpReverse.endTrajectory().fresh()
                         .turn(Math.toRadians(180))
                         .setTangent(Math.toRadians(180))
-                        .splineToConstantHeading(new Vector2d(0 +5-4, (-24 - robotHalfW)), Math.toRadians(90));
+                        .splineToConstantHeading(new Vector2d(0 +5-5, (-24 - robotHalfW)), Math.toRadians(90));
 
         TrajectoryActionBuilder specPlace1ToRotatePoint =
                 wallPickUpToSpecPlace1.endTrajectory().fresh()
@@ -181,7 +181,7 @@ public class MeepMeepTesting {
                 specPlace1RotatePointToWall.endTrajectory().fresh()
                         .turn(Math.toRadians(180))
                         .setTangent(Math.toRadians(180))
-                        .splineToConstantHeading(new Vector2d(0 +7-3, (-24 - robotHalfW)), Math.toRadians(90));
+                        .splineToConstantHeading(new Vector2d(0 +7-2, (-24 - robotHalfW)), Math.toRadians(90));
 
         TrajectoryActionBuilder specPlace2ToWall =
                 wallPickUpToSpecPlace2.endTrajectory().fresh()

@@ -75,7 +75,7 @@ public class EXPERIMENTALSpecAuto extends RobotHardware {
 
         TrajectoryActionBuilder rightStartToSpecimenPlace =
                 drive.actionBuilder(new Pose2d(10, (-72 + robotHalfW ), Math.toRadians(90))) // added 6in to line up edge of the robot on the left side of the feild tile perforation
-                        .splineTo(new Vector2d(0, (-24 - robotHalfW)), Math.toRadians(90));
+                        .splineTo(new Vector2d(0-3, (-24 - robotHalfW)), Math.toRadians(90));
 
 
 
@@ -191,7 +191,7 @@ public class EXPERIMENTALSpecAuto extends RobotHardware {
                 blue2WallPickUpReverse.endTrajectory().fresh()
                         .turn(Math.toRadians(180))
                         .setTangent(Math.toRadians(180))
-                        .splineToConstantHeading(new Vector2d(0 +5-4, (-24 - robotHalfW)), Math.toRadians(90));
+                        .splineToConstantHeading(new Vector2d(0 +5-5, (-24 - robotHalfW)), Math.toRadians(90));
 
         TrajectoryActionBuilder specPlace1ToRotatePoint =
                 wallPickUpToSpecPlace1.endTrajectory().fresh()
@@ -208,7 +208,7 @@ public class EXPERIMENTALSpecAuto extends RobotHardware {
                 specPlace1RotatePointToWall.endTrajectory().fresh()
                         .turn(Math.toRadians(180))
                         .setTangent(Math.toRadians(180))
-                        .splineToConstantHeading(new Vector2d(0 +7-3, (-24 - robotHalfW)), Math.toRadians(90));
+                        .splineToConstantHeading(new Vector2d(0 +7-2, (-24 - robotHalfW)), Math.toRadians(90));
 
         TrajectoryActionBuilder specPlace2ToWall =
                 wallPickUpToSpecPlace2.endTrajectory().fresh()

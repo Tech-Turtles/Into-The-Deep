@@ -30,7 +30,7 @@ public final class Constants {
     public static double SLIDE_TICKS_PER_ROTATION = 537.7;
     public static double SLIDE_HORIZONTAL_LIMIT_ROTATIONS = 1.55;
     public static double SLIDE_SPECIMEN_RETRACT_TICKS = -150;
-    public static double CHAMBER_INTAKE_EXT_SLIDE = /*-120*/ -55;
+    public static double CHAMBER_INTAKE_EXT_SLIDE = /*-120*/ -85;
     // ------------------------------
     // Arm Mechanism Constants
     // ------------------------------
