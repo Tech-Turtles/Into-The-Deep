@@ -8,7 +8,7 @@ public final class Constants {
     // ------------------------------
     // Sensor Settings
     // ------------------------------
-    public static double COLOR_SENSOR_STOP_DISTANCE = 0.4;
+    public static double COLOR_SENSOR_STOP_DISTANCE = 1.2;
     // ------------------------------
     // Slide Mechanism Constants
     // ------------------------------

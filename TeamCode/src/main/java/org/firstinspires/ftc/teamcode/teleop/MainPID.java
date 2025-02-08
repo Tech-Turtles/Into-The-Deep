@@ -19,6 +19,8 @@ import static org.firstinspires.ftc.teamcode.Constants.*;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -210,11 +212,27 @@ public class MainPID extends RobotHardware {
         displayData("IMU angle", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
 
         displayData("Intake Color Sensor Distance (In)", intakeSensor.getDistance(DistanceUnit.INCH));
-        telemetry.addData("Intake Color Sensor Colors", "R%.2f, G%.2f, B%.2f, A%.2f",
-                intakeSensor.getNormalizedColors().red, intakeSensor.getNormalizedColors().green,
-                intakeSensor.getNormalizedColors().blue, intakeSensor.getNormalizedColors().alpha);
+        telemetry.addData("Intake Color Sensor Colors", "R%d, G%d, B%d, A%d",
+                intakeSensor.red(), intakeSensor.green(),
+                intakeSensor.blue(), intakeSensor.alpha());
 
+        NormalizedRGBA colors = intakeSensor.getNormalizedColors();
+        String color = "None";
+        if (colors.alpha > 0.5) {
+            if (colors.green >= 0.01)
+                color = "Yellow";
+            else if (colors.red >= 0.01)
+                color = "Red";
+            else if (colors.blue >= 0.01)
+                color = "Blue";
+        }
+        displayData("Color In Intake", color);
 
+        telemetry.addLine(String.format(
+                "<h1 style='color:\""+color.toLowerCase()+"\";'>%s</h1>",
+                color
+        ));
+        telemetry.addLine("<font color=\""+color.toLowerCase()+"\">█████████████████████████████████████████████████████████████████████</font>");
         displayData("Max Extension Ticks", getExtensionLimitTicks());
         displayData("Arm Pit Set Point", (armPitTarget));
 
