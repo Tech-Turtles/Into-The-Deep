@@ -110,8 +110,8 @@ public class MainPID extends RobotHardware {
         }
 
         if (controller2.triangle()) {
-            slideSetpoint = HIGH_SPEC_EXT_SLIDE;
-            armPitTarget = ARM_HIGH_SPEC_PIVOT_ANGLE;
+            slideSetpoint = SlIDE_CLIMB_L2_EXTENSION;
+            armPitTarget = ARM_CLIMB_L2_ANGLE;
         }
 
         if (controller2.cross()) {
@@ -139,7 +139,7 @@ public class MainPID extends RobotHardware {
         displayData("Slide Power", slidePower);
 
         if (controller2.right_trigger > 0.2) {
-            if (!controller2.circle()
+            if (!controller2.triangle()
                     && Math.abs(slideMotorRight.getCurrentPosition()) > getExtensionLimitTicks()) {
                 setSlidePower(0);
             } else {
