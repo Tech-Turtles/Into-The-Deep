@@ -30,7 +30,7 @@ public final class Constants {
     public static double SLIDE_TICKS_PER_ROTATION = 537.7;
     public static double SLIDE_HORIZONTAL_LIMIT_ROTATIONS = 1.55;
     public static double SLIDE_SPECIMEN_RETRACT_TICKS = -150;
-    public static double SlIDE_CLIMB_L2_EXTENSION = -800;
+    public static double SlIDE_CLIMB_L2_EXTENSION = -850;
     public static double CHAMBER_INTAKE_EXT_SLIDE = /*-120*/ -85;
     // ------------------------------
     // Arm Mechanism Constants
@@ -45,7 +45,7 @@ public final class Constants {
     public static double ARM_HORIZONTAL_POSITION = -1450;
     public static double ARM_HIGH_CHAMBER_END_POSITION = 50;
     public static double ARM_WALL_SPEC_INTAKE_ANGLE = -600;
-    public static double ARM_CLIMB_L2_ANGLE = 125;
+    public static double ARM_CLIMB_L2_ANGLE = 275;
     public static double TELE_ARM_WALL_SPEC_INTAKE_ANGLE = -600-50;
     public static double ARM_FEEDFORWARD = 0.145;
     public static double ARM_FEEDFORWARD_MAX = 0.3;
