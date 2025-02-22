@@ -46,7 +46,7 @@ public final class Constants {
     public static double ARM_HIGH_CHAMBER_END_POSITION = 50;
     public static double ARM_WALL_SPEC_INTAKE_ANGLE = -600;
     public static double ARM_CLIMB_L2_ANGLE = 275;
-    public static double TELE_ARM_WALL_SPEC_INTAKE_ANGLE = -600-50;
+    public static double TELE_ARM_WALL_SPEC_INTAKE_ANGLE = -550;
     public static double ARM_FEEDFORWARD = 0.145;
     public static double ARM_FEEDFORWARD_MAX = 0.3;
     public static double ARM_ZERO_OFFSET = 1450;

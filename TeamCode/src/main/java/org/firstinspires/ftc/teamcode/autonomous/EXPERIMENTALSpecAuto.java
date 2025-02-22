@@ -219,14 +219,14 @@ public class EXPERIMENTALSpecAuto extends RobotHardware {
         autonomous = new SequentialAction(
                 new InstantAction(() -> //does on start, set arm to spec deposit
                 {
-                    armSetpoint = Constants.ARM_HIGH_SPEC_PLACE_PIVOT_ANGLE-15;
-                    slideSetpoint = Constants.HIGH_SPEC_EXT_SLIDE;
+                    armSetpoint = Constants.ARM_HIGH_SPEC_PLACE_PIVOT_ANGLE;
+                    slideSetpoint = Constants.HIGH_SPEC_EXT_SLIDE-20;
                     new SleepAction(0.2);
                 }),
                 rightStartToSpecimenPlace.build(), //drives to chamber
                 new InstantAction(() -> // places spec
                 {
-                    armSetpoint = Constants.ARM_HIGH_SPEC_PLACE_PIVOT_ANGLE-15;
+                    armSetpoint = Constants.ARM_HIGH_SPEC_PLACE_PIVOT_ANGLE;
                     slideSetpoint = Constants.SLIDE_SPECIMEN_RETRACT_TICKS; //value inputted, needs to be confirmed
                 }),
                 new SleepAction(0.25),
